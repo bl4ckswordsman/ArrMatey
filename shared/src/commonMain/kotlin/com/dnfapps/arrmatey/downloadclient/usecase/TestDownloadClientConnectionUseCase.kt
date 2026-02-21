@@ -2,7 +2,7 @@ package com.dnfapps.arrmatey.downloadclient.usecase
 
 import com.dnfapps.arrmatey.client.NetworkResult
 import com.dnfapps.arrmatey.downloadclient.repository.DownloadClientManager
-import com.dnfapps.arrmatey.downloadclient.state.internal.DownloadClientConnectionState
+import com.dnfapps.arrmatey.downloadclient.state.DownloadClientConnectionState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
