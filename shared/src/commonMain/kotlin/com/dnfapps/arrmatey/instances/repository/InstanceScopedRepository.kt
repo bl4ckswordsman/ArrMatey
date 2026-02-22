@@ -195,6 +195,11 @@ class InstanceScopedRepository(
             launch { refreshQualityProfiles() }
             launch { refreshRootFolders() }
             launch { refreshTags() }
+        }
+    }
+
+    suspend fun refreshInstanceStatuses() {
+        coroutineScope {
             launch { refreshStatus() }
             launch { refreshDiskSpace() }
             launch { refreshHealth() }

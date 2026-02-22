@@ -141,6 +141,10 @@ class ArrMediaViewModel(
         _hasServerConnectivityError.value = (state.type == ErrorType.Network)
     }
 
+    fun resetErrorMessage() {
+        _errorMessage.value = null
+    }
+
     fun executeAutomaticSearch(seriesId: Long) {
         viewModelScope.launch {
             currentRepository?.executeAutomaticSearch(seriesId)

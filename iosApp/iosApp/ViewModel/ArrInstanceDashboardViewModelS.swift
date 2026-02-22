@@ -12,9 +12,8 @@ import SwiftUI
 class ArrInstanceDashboardViewModelS: ObservableObject {
     private let viewModel: ArrInstanceDashboardViewModel
     
-    @Published private(set) var softwareStatus: ArrSoftwareStatus? = nil
-    @Published private(set) var diskSpaces: [ArrDiskSpace] = []
-    @Published private(set) var health: [ArrHealth] = []
+    @Published private(set) var state: ArrDashboardState = ArrDashboardStateInitial()
+    @Published private(set) var isRefreshing: Bool = false
     @Published private(set) var instance: Instance? = nil
     
     init(_ id: Int64) {
@@ -23,10 +22,13 @@ class ArrInstanceDashboardViewModelS: ObservableObject {
     }
     
     private func startObserving() {
-        viewModel.softwareStatus.observeAsync { self.softwareStatus = $0 }
-        viewModel.diskSpaces.observeAsync { self.diskSpaces = $0 }
-        viewModel.health.observeAsync { self.health = $0 }
+        viewModel.state.observeAsync { self.state = $0 }
+        viewModel.isRefreshing.observeAsync { self.isRefreshing = $0.boolValue }
         viewModel.instance.observeAsync { self.instance = $0 }
+    }
+    
+    func refresh() {
+        viewModel.refresh()
     }
     
 }

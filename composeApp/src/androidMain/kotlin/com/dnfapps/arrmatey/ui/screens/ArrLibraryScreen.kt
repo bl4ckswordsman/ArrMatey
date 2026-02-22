@@ -90,9 +90,10 @@ fun ArrLibraryScreen(
     val errorMessage by arrMediaViewModel.errorMessage.collectAsStateWithLifecycle()
 
     LaunchedEffect(errorMessage) {
-        errorMessage?.let { message ->
+        errorMessage?.takeUnless { it.isEmpty() }?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+        arrMediaViewModel.resetErrorMessage()
     }
 
     val textFieldState = rememberTextFieldState()
@@ -338,33 +339,5 @@ private fun EmptyLibraryView(
         Text(
             text = mokoString(MR.strings.empty_library_message)
         )
-    }
-}
-
-@Composable
-private fun InstanceErrorView(
-    onRefresh: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = Icons.Default.CloudOff,
-            contentDescription = null,
-            modifier = Modifier.size(128.dp),
-            tint = MaterialTheme.colorScheme.error
-        )
-        Text(
-            text = mokoString(MR.strings.couldnt_connect),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium
-        )
-        Text(text = mokoString(MR.strings.couldnt_connect_message))
-        Button(onClick = onRefresh) {
-            Text(text = mokoString(MR.strings.retry))
-        }
     }
 }

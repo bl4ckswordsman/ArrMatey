@@ -59,7 +59,7 @@ struct MediaDetailsScreen: View {
             .confirmationAlert(item: $confirmDeleteAlbum) { album in
                 AlertConfig(
                     title: MR.strings().delete_album.localized(),
-                    message: MR.strings().delete_album_confirm.formatted(args: [album.title]),
+                    message: MR.strings().delete_album_confirm.formatted(args: [album.title ?? MR.strings().unknown.localized()]),
                     action: { viewModel.deleteAlbumFiles(album.id) }
                 )
             }

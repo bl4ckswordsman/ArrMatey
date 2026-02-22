@@ -1,6 +1,7 @@
 package com.dnfapps.arrmatey.arr.api.model
 
 import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.utils.MokoStrings
 import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Serializable
 
