@@ -7,5 +7,5 @@ class TestNewInstanceConnectionUseCase(
     private val client: GenericClient
 ) {
     suspend operator fun invoke(url: String, apiKey: String, type: InstanceType): Boolean =
-        client.test(url.trim(), apiKey.trim(), type.apiBase)
+        client.test(url.trim(), apiKey.trim(), type)
 }
