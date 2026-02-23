@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "59bc288c4b27c435bfe95550e1116395",
+    "identityHash": "310863a5297a81b83fe42810332b1838",
     "entities": [
       {
         "tableName": "instances",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `label` TEXT, `url` TEXT NOT NULL, `apiKey` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `slowInstance` INTEGER NOT NULL, `customTimeout` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `label` TEXT NOT NULL, `url` TEXT NOT NULL, `apiKey` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `slowInstance` INTEGER NOT NULL, `customTimeout` INTEGER, `selected` INTEGER NOT NULL, `headers` TEXT NOT NULL, `localNetworkEnabled` INTEGER NOT NULL, `localNetworkSsid` TEXT, `localNetworkEndpoint` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -23,7 +23,8 @@
           {
             "fieldPath": "label",
             "columnName": "label",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "url",
@@ -53,6 +54,34 @@
             "fieldPath": "customTimeout",
             "columnName": "customTimeout",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headers",
+            "columnName": "headers",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localNetworkEnabled",
+            "columnName": "localNetworkEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localNetworkSsid",
+            "columnName": "localNetworkSsid",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "localNetworkEndpoint",
+            "columnName": "localNetworkEndpoint",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -70,13 +99,22 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_instances_url` ON `${TABLE_NAME}` (`url`)"
+          },
+          {
+            "name": "index_instances_label",
+            "unique": true,
+            "columnNames": [
+              "label"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_instances_label` ON `${TABLE_NAME}` (`label`)"
           }
         ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '59bc288c4b27c435bfe95550e1116395')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '310863a5297a81b83fe42810332b1838')"
     ]
   }
 }

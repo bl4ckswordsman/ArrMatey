@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dnfapps.arrmatey.arr.viewmodel.AddInstanceViewModel
@@ -36,6 +37,7 @@ import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.navigation.SettingsNavigation
 import com.dnfapps.arrmatey.ui.components.DropdownPicker
 import com.dnfapps.arrmatey.ui.components.InstanceInfoCard
+import com.dnfapps.arrmatey.utils.NetworkUtils
 import com.dnfapps.arrmatey.utils.mokoString
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -98,7 +100,7 @@ fun AddInstanceScreen(
                 },
                 scrollBehavior = scrollBehavior
             )
-        },
+        }
     ) { contentPadding ->
         Column (
             modifier = Modifier
@@ -138,7 +140,11 @@ fun AddInstanceScreen(
                 onIsSlowInstanceChanged = { viewModel.setIsSlowInstance(it) },
                 onCustomTimeoutChanged = { viewModel.setCustomTimeout(it) },
                 onTestConnection = { viewModel.testConnection() },
-                onHeadersChanged = { viewModel.updateHeaders(it) }
+                onHeadersChanged = { viewModel.updateHeaders(it) },
+                onLocalNetworkEnabledChanged = { viewModel.setLocalNetworkEnabled(it) },
+                onLocalNetworkUrlChanged = { viewModel.setLocalNetworkUrl(it) },
+                onLocalNetworkSsidChanged = { viewModel.setLocalNetworkSsid(it) },
+                onTestLocalConnection = { viewModel.testLocalConnection() }
             )
         }
     }

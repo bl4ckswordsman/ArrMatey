@@ -47,7 +47,6 @@ fun createInstanceClient(
 
         instance?.let { instance ->
             defaultRequest {
-                url(instance.url + "/")
                 header(HEADER_X_API_KEY, instance.apiKey)
                 instance.headers.forEach { (key, value) ->
                     header(key, value)

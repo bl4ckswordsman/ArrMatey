@@ -75,6 +75,18 @@ class AddInstanceViewModel(
         }
     }
 
+    fun setLocalNetworkEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(localNetworkEnabled = enabled) }
+    }
+
+    fun setLocalNetworkUrl(url: String) {
+        _uiState.update { it.copy(localNetworkUrl = url) }
+    }
+
+    fun setLocalNetworkSsid(ssid: String) {
+        _uiState.update { it.copy(localNetworkSsid = ssid) }
+    }
+
     fun reset() {
         _uiState.value = AddInstanceUiState(
             infoCardMaps = _uiState.value.infoCardMaps
@@ -113,6 +125,29 @@ class AddInstanceViewModel(
         }
     }
 
+    fun testLocalConnection() {
+        val state = _uiState.value
+        if (state.localTesting || state.localNetworkUrl.isBlank()) return
+
+        viewModelScope.launch {
+            if (!state.localNetworkUrl.isValidUrl()) {
+                _uiState.update { it.copy(localNetworkUrlError = true, localTesting = false) }
+                return@launch
+            }
+
+            _uiState.update { it.copy(localTesting = true, localNetworkUrlError = false) }
+
+            val success = testNewInstanceConnectionUseCase(state.localNetworkUrl, state.apiKey)
+
+            _uiState.update {
+                it.copy(
+                    localTesting = false,
+                    localTestResult = success
+                )
+            }
+        }
+    }
+
     fun createInstance(type: InstanceType) {
         val s = _uiState.value
         val instance = Instance(
@@ -122,7 +157,10 @@ class AddInstanceViewModel(
             apiKey = s.apiKey,
             slowInstance = s.isSlowInstance,
             customTimeout = if (s.isSlowInstance) s.customTimeout else null,
-            headers = s.headers.filter { it.key.isNotEmpty() && it.value.isNotEmpty() }
+            headers = s.headers.filter { it.key.isNotEmpty() && it.value.isNotEmpty() },
+            localNetworkEnabled = s.localNetworkEnabled,
+            localNetworkEndpoint = s.localNetworkUrl.takeIf { s.localNetworkEnabled && it.isNotBlank() },
+            localNetworkSsid = s.localNetworkSsid.takeIf { s.localNetworkEnabled && it.isNotBlank() }
         )
 
         viewModelScope.launch {

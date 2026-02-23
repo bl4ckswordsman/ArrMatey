@@ -68,7 +68,8 @@ fun AMOutlinedTextField(
                 { Text(text = errorMessage) }
             } else null,
             enabled = enabled,
-            keyboardOptions = keyboardOptions
+            keyboardOptions = keyboardOptions,
+            shape = MaterialTheme.shapes.large
         )
         description?.let {
             Text(
@@ -80,55 +81,3 @@ fun AMOutlinedTextField(
         }
     }
 }
-
-//@Composable
-//fun AMOutlinedTextField(
-//    value: String,
-//    onValueChange: (String) -> Unit,
-//    modifier: Modifier = Modifier,
-//    singleLine: Boolean = false,
-//    label: AnnotatedString? = null,
-//    description: String? = null,
-//    placeholder: String? = null,
-//    errorMessage: String? = null,
-//    isError: Boolean = false
-//) {
-//    Column(
-//        verticalArrangement = Arrangement.spacedBy(4.dp),
-//        modifier = modifier
-//    ) {
-//        label?.let {
-//            Text(
-//                text = it,
-//                color = MaterialTheme.colorScheme.onSurface,
-//                fontSize = 14.sp,
-//                maxLines = 1
-//            )
-//        }
-//        OutlinedTextField(
-//            value = value,
-//            onValueChange = onValueChange,
-//            modifier = Modifier.fillMaxWidth(),
-//            placeholder = placeholder?.let { {
-//                Text(
-//                    text = it,
-//                    fontSize = 14.sp,
-//                    maxLines = 1
-//                )
-//            } },
-//            singleLine = singleLine,
-//            isError = isError,
-//            supportingText = if (isError && errorMessage != null) {
-//                { Text(text = errorMessage) }
-//            } else null
-//        )
-//        description?.let {
-//            Text(
-//                text = it,
-//                color = MaterialTheme.colorScheme.onSurface,
-//                fontSize = 12.sp,
-//                lineHeight = 14.sp
-//            )
-//        }
-//    }
-//}

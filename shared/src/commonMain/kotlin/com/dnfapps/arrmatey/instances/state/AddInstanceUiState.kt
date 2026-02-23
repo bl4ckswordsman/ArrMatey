@@ -12,16 +12,18 @@ data class AddInstanceUiState(
     val customTimeout: Long? = null,
     val endpointError: Boolean = false,
     val testing: Boolean = false,
+    val localTesting: Boolean = false,
     val testResult: Boolean? = null,
+    val localTestResult: Boolean? = null,
     val saveButtonEnabled: Boolean = false,
     val createResult: InsertResult? = null,
     val editResult: InsertResult? = null,
     val infoCardMaps: Map<InstanceType, Boolean> = emptyMap(),
-    val headers: List<InstanceHeader> = emptyList()
+    val headers: List<InstanceHeader> = emptyList(),
+    val localNetworkEnabled: Boolean = false,
+    val localNetworkUrl: String = "",
+    val localNetworkSsid: String = "",
+    val localNetworkUrlError: Boolean = false
 ) {
-    constructor(): this(
-        "", "", "", false,
-        null, false, false, null,
-        false, null, null,
-        emptyMap(), emptyList())
+    constructor(): this("") // helper for iOS
 }

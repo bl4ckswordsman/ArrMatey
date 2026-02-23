@@ -2,7 +2,6 @@ package com.dnfapps.arrmatey.arr.api.client
 
 import com.dnfapps.arrmatey.arr.api.model.ArrDiskSpace
 import com.dnfapps.arrmatey.arr.api.model.ArrHealth
-import com.dnfapps.arrmatey.arr.api.model.ArrMedia
 import com.dnfapps.arrmatey.arr.api.model.ArrSoftwareStatus
 import com.dnfapps.arrmatey.arr.api.model.CommandPayload
 import com.dnfapps.arrmatey.arr.api.model.CommandResponse
@@ -29,7 +28,7 @@ abstract class BaseArrClient(
     protected abstract val instance: Instance
 
     protected val baseUrl: String
-        get() = "${instance.url}/${instance.type.apiBase}"
+        get() = "${instance.getEffectiveBaseUrl()}/${instance.type.apiBase}"
 
     override suspend fun testConnection(): NetworkResult<Unit> =
         get("${instance.url}/api")

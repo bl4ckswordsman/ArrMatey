@@ -46,7 +46,10 @@ class EditInstanceViewModel(
                         isSlowInstance = instance.slowInstance,
                         customTimeout = instance.customTimeout,
                         instanceLabel = instance.label,
-                        headers = instance.headers
+                        headers = instance.headers,
+                        localNetworkEnabled = instance.localNetworkEnabled,
+                        localNetworkUrl = instance.localNetworkEndpoint ?: "",
+                        localNetworkSsid = instance.localNetworkSsid ?: ""
                     )
                 }
             }
@@ -93,6 +96,18 @@ class EditInstanceViewModel(
         }
     }
 
+    fun setLocalNetworkEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(localNetworkEnabled = enabled) }
+    }
+
+    fun setLocalNetworkUrl(url: String) {
+        _uiState.update { it.copy(localNetworkUrl = url) }
+    }
+
+    fun setLocalNetworkSsid(ssid: String) {
+        _uiState.update { it.copy(localNetworkSsid = ssid) }
+    }
+
     fun reset() {
         _uiState.value = AddInstanceUiState()
     }
@@ -124,6 +139,29 @@ class EditInstanceViewModel(
         }
     }
 
+    fun testLocalConnection() {
+        val state = _uiState.value
+        if (state.localTesting || state.localNetworkUrl.isBlank()) return
+
+        viewModelScope.launch {
+            if (!state.localNetworkUrl.isValidUrl()) {
+                _uiState.update { it.copy(localNetworkUrlError = true, localTesting = false) }
+                return@launch
+            }
+
+            _uiState.update { it.copy(localTesting = true, localNetworkUrlError = false) }
+
+            val success = testNewInstanceConnectionUseCase(state.localNetworkUrl, state.apiKey)
+
+            _uiState.update {
+                it.copy(
+                    localTesting = false,
+                    localTestResult = success
+                )
+            }
+        }
+    }
+
     fun updateInstance() {
         val s = _uiState.value
         val updated = instance.value?.copy(
@@ -132,7 +170,10 @@ class EditInstanceViewModel(
             apiKey = s.apiKey,
             slowInstance = s.isSlowInstance,
             customTimeout = if (s.isSlowInstance) s.customTimeout else null,
-            headers = s.headers.filter { it.key.isNotEmpty() && it.value.isNotEmpty() }
+            headers = s.headers.filter { it.key.isNotEmpty() && it.value.isNotEmpty() },
+            localNetworkEnabled = s.localNetworkEnabled,
+            localNetworkEndpoint = s.localNetworkUrl.takeIf { s.localNetworkEnabled && it.isNotBlank() },
+            localNetworkSsid = s.localNetworkSsid.takeIf { s.localNetworkEnabled && it.isNotBlank() }
         ) ?: run {
             _uiState.update { it.copy(
                 editResult = InsertResult.Error("Instance doesn't exist")

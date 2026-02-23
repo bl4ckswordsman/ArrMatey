@@ -14,7 +14,7 @@ import kotlinx.coroutines.IO
 
 @Database(
     entities = [Instance::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

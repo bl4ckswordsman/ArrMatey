@@ -5,6 +5,7 @@ import Shared
 struct iOSApp: App {
     init() {
         KoinHelperKt.doInitKoin()
+        NetworkUtilsKt.initializeNetworkUtils()
     }
     
     @StateObject private var navigationManager = NavigationManager()

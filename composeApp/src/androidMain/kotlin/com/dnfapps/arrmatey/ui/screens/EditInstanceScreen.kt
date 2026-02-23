@@ -45,8 +45,7 @@ import org.koin.compose.koinInject
 fun EditInstanceScreen(
     id: Long,
     viewModel: EditInstanceViewModel = koinInjectParams(id),
-    settingsNav: SettingsNavigation = koinInject<SettingsNavigation>(),
-    moko: MokoStrings = koinInject()
+    settingsNav: SettingsNavigation = koinInject<SettingsNavigation>()
 ) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -132,6 +131,10 @@ fun EditInstanceScreen(
                     onCustomTimeoutChanged = { viewModel.setCustomTimeout(it) },
                     onHeadersChanged = { viewModel.updateHeaders(it) },
                     onTestConnection = { viewModel.testConnection() },
+                    onLocalNetworkEnabledChanged = { viewModel.setLocalNetworkEnabled(it) },
+                    onLocalNetworkUrlChanged = { viewModel.setLocalNetworkUrl(it) },
+                    onLocalNetworkSsidChanged = { viewModel.setLocalNetworkSsid(it) },
+                    onTestLocalConnection = { viewModel.testLocalConnection() }
                 )
             }
 
