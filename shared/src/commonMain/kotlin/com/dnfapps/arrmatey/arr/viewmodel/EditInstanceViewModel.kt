@@ -114,6 +114,7 @@ class EditInstanceViewModel(
 
     fun testConnection() {
         val state = _uiState.value
+        val type = instance.value?.type ?: return
         if (state.testing) return
 
         viewModelScope.launch {
@@ -124,7 +125,7 @@ class EditInstanceViewModel(
 
             _uiState.update { it.copy(testing = true, endpointError = false) }
 
-            val success = testNewInstanceConnectionUseCase(state.apiEndpoint, state.apiKey)
+            val success = testNewInstanceConnectionUseCase(state.apiEndpoint, state.apiKey, type)
 
             _uiState.update {
                 it.copy(
@@ -142,6 +143,7 @@ class EditInstanceViewModel(
     fun testLocalConnection() {
         val state = _uiState.value
         if (state.localTesting || state.localNetworkUrl.isBlank()) return
+        val type = instance.value?.type ?: return
 
         viewModelScope.launch {
             if (!state.localNetworkUrl.isValidUrl()) {
@@ -151,7 +153,7 @@ class EditInstanceViewModel(
 
             _uiState.update { it.copy(localTesting = true, localNetworkUrlError = false) }
 
-            val success = testNewInstanceConnectionUseCase(state.localNetworkUrl, state.apiKey)
+            val success = testNewInstanceConnectionUseCase(state.localNetworkUrl, state.apiKey, type)
 
             _uiState.update {
                 it.copy(

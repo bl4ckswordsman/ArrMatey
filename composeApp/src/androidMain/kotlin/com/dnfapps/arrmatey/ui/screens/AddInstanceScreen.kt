@@ -139,12 +139,12 @@ fun AddInstanceScreen(
                 onInstanceLabelChanged = { viewModel.setInstanceLabel(it) },
                 onIsSlowInstanceChanged = { viewModel.setIsSlowInstance(it) },
                 onCustomTimeoutChanged = { viewModel.setCustomTimeout(it) },
-                onTestConnection = { viewModel.testConnection() },
+                onTestConnection = { viewModel.testConnection(selectedInstanceType) },
                 onHeadersChanged = { viewModel.updateHeaders(it) },
                 onLocalNetworkEnabledChanged = { viewModel.setLocalNetworkEnabled(it) },
                 onLocalNetworkUrlChanged = { viewModel.setLocalNetworkUrl(it) },
                 onLocalNetworkSsidChanged = { viewModel.setLocalNetworkSsid(it) },
-                onTestLocalConnection = { viewModel.testLocalConnection() }
+                onTestLocalConnection = { viewModel.testLocalConnection(selectedInstanceType) }
             )
         }
     }

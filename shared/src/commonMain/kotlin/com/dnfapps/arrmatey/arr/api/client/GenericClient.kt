@@ -2,6 +2,7 @@ package com.dnfapps.arrmatey.arr.api.client
 
 import com.dnfapps.arrmatey.client.NetworkResult
 import com.dnfapps.arrmatey.client.safeGet
+import com.dnfapps.arrmatey.instances.model.InstanceType
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 
@@ -11,9 +12,9 @@ class GenericClient(
 
     private val httpClient: HttpClient = httpClientFactory.createGeneric()
 
-    suspend fun test(endpoint: String, apiKey: String): Boolean {
+    suspend fun test(endpoint: String, apiKey: String, type: InstanceType): Boolean {
         try {
-            val response = httpClient.safeGet<Any>("$endpoint/api") {
+            val response = httpClient.safeGet<Any>("${endpoint.trimEnd('/')}/${type.apiBase}/${type.testEndpoint}") {
                 header("X-Api-Key", apiKey)
             }
             return response is NetworkResult.Success

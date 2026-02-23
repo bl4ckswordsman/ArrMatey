@@ -72,6 +72,7 @@ enum class InstanceType(
     val defaultPort: Int,
     val supportsActivityQueue: Boolean,
     val apiBase: String,
+    val testEndpoint: String,
     val includeTopLevelAutomaticSearchOption: Boolean,
     val aspectRatio: AspectRatio
 ) {
@@ -83,6 +84,7 @@ enum class InstanceType(
         defaultPort = 8989,
         supportsActivityQueue = true,
         apiBase = "api/v3",
+        testEndpoint = "system/status",
         includeTopLevelAutomaticSearchOption = true,
         aspectRatio = AspectRatio.Poster
     ),
@@ -94,6 +96,7 @@ enum class InstanceType(
         defaultPort = 7878,
         supportsActivityQueue = true,
         apiBase = "api/v3",
+        testEndpoint = "system/status",
         includeTopLevelAutomaticSearchOption = false,
         aspectRatio = AspectRatio.Poster
     ),
@@ -105,6 +108,7 @@ enum class InstanceType(
         defaultPort = 8686,
         supportsActivityQueue = true,
         apiBase = "api/v1",
+        testEndpoint = "system/status",
         includeTopLevelAutomaticSearchOption = true,
         aspectRatio = AspectRatio.Cover
     )
