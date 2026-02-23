@@ -17,6 +17,10 @@ struct ArrConfigurationView: View {
     let onCustomTimeoutChanged: (Int64?) -> Void
     let onHeadersChanged: ([InstanceHeader]) -> Void
     let onTestConnection: () -> Void
+    let onLocalNetworkEnabledChanged: (Bool) -> Void
+    let onLocalNetworkUrlChanged: (String) -> Void
+    let onLocalNetworkSsidChanged: (String) -> Void
+    let onTestLocalConnection: () -> Void
     let onDismissInfoCard: (InstanceType) -> Void
     let showInfoCard: Bool
     let showInstancePicker: Bool
@@ -28,6 +32,9 @@ struct ArrConfigurationView: View {
     @State private var instanceLabel: String = ""
     @State private var customTimeoutText: String = ""
     @State private var headers: [InstanceHeader] = []
+    
+    @StateObject private var permissionHandler = LocationPermissionHandler()
+    @State private var showRationale = false
     
     @Environment(\.openURL) var openURL
     
@@ -57,6 +64,7 @@ struct ArrConfigurationView: View {
             
             instanceSection
             testSection
+            localNetworkArea
             slowInstanceSection
             headersSection
         }
@@ -309,6 +317,126 @@ struct ArrConfigurationView: View {
             Text(MR.strings().custom_headers.localized())
         } footer: {
             Text(MR.strings().custom_headers_description.localized())
+        }
+    }
+    
+    @ViewBuilder
+    private var localNetworkArea: some View {
+        Section {
+            Toggle(isOn: Binding(
+                get: { uiState.localNetworkEnabled },
+                set: { newValue in
+                    onLocalNetworkEnabledChanged(newValue)
+                    if newValue && !permissionHandler.isGranted() {
+                        showRationale = true
+                    }
+                }
+            )) {
+                VStack(alignment: .leading) {
+                    Text(MR.strings().use_local_network.localized())
+                }
+            }
+                
+            if uiState.localNetworkEnabled {
+                if !permissionHandler.isGranted() && permissionHandler.authorizationStatus != .notDetermined {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(MR.strings().location_denied_message.localized())
+                            .font(.subheadline).foregroundColor(.red)
+                        
+                        Button(action: {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
+                            Text(MR.strings().open_location_permissions.localized())
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                } else if permissionHandler.isGranted() {
+                    VStack(alignment: .leading, spacing: 16) {
+                
+                        HStack(spacing: 24) {
+                            Text(MR.strings().host.localized()).layoutPriority(2)
+                            TextField("http://192.168.1.100:\(instanceType.defaultPort)",
+                                      text: Binding(get: { uiState.localNetworkUrl }, set: onLocalNetworkUrlChanged))
+                            .multilineTextAlignment(.trailing)
+                            
+                        }
+                        
+                        if uiState.localNetworkUrlError {
+                            Text(MR.strings().invalid_url.localized())
+                                .font(.caption).foregroundColor(.red)
+                        }
+                    }
+                            
+                    VStack {
+                        HStack(spacing: 24) {
+                                Text(MR.strings().wifi_network_name.localized()).layoutPriority(2)
+                            TextField("MyHomeWiFi",
+                                      text: Binding(get: { uiState.localNetworkSsid }, set: onLocalNetworkSsidChanged))
+                            .multilineTextAlignment(.trailing)
+                        }
+                        
+                    }
+                            
+                    Button(action: {
+                        if let ssid = NetworkUtilsKt.getNetworkUtils().getCurrentWifiSsid() {
+                            onLocalNetworkSsidChanged(ssid)
+                        }
+                    }) {
+                        Label(MR.strings().use_current_network.localized(), systemImage: "wifi")
+                    }
+                            
+                    HStack {
+                        Button(action: onTestConnection) {
+                            if uiState.localTesting {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                            } else {
+                                Text(MR.strings().test.localized())
+                            }
+                        }
+                        .disabled(uiState.localTesting || uiState.localNetworkUrl.isEmpty || uiState.localNetworkSsid.isEmpty)
+                        
+                        Spacer()
+                        
+                        if let localTestResult = uiState.localTestResult {
+                            HStack(spacing: 4) {
+                                Text(localTestResult.boolValue ? MR.strings().success.localized() : MR.strings().failure.localized())
+                                    .foregroundColor(localTestResult.boolValue ? .green : .red)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                    }
+                }
+            }
+        } header: {
+            Text(MR.strings().local_network_switching.localized())
+        } footer: {
+            Text(MR.strings().local_network_description.localized())
+        }
+        .alert(MR.strings().location_rationale_title.localized(), isPresented: $showRationale) {
+            Button(MR.strings().confirm.localized()) {
+                permissionHandler.checkAndPerformAction()
+            }
+            Button(MR.strings().cancel.localized(), role: .cancel) {
+                onLocalNetworkEnabledChanged(false)
+            }
+        } message: {
+            Text(MR.strings().location_rationale_description_ios.localized())
+        }
+    }
+    
+    @ViewBuilder
+    private var testResultView: some View {
+        if let result = uiState.localTestResult?.boolValue {
+            HStack {
+                Image(systemName: result ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundColor(result ? .green : .red)
+                Text(result ? MR.strings().success.localized() : MR.strings().failure.localized())
+                    .foregroundColor(result ? .green : .red)
+            }
         }
     }
 }

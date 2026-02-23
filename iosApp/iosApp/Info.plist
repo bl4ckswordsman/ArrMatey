@@ -11,5 +11,9 @@
 	</array>
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need access to WiFi information to enable local network switching</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need access to WiFi information to enable local network switching</string>
 </dict>
 </plist>

@@ -54,6 +54,18 @@ class AddInstanceViewModelS: ObservableObject {
         viewModel.updateHeaders(headers: headers)
     }
     
+    func setLocalNetworkEnabled(_ enabled: Bool) {
+        viewModel.setLocalNetworkEnabled(enabled: enabled)
+    }
+    
+    func setLocalNetworkUrl(_ url: String) {
+        viewModel.setLocalNetworkUrl(url: url)
+    }
+    
+    func setLocalNetworkSsid(_ ssid: String) {
+        viewModel.setLocalNetworkSsid(ssid: ssid)
+    }
+    
     func reset() {
         viewModel.reset()
     }
@@ -64,6 +76,10 @@ class AddInstanceViewModelS: ObservableObject {
     
     func testConnection() {
         viewModel.testConnection()
+    }
+    
+    func testLocalConnection() {
+        viewModel.testLocalConnection()
     }
     
     func createInstance(_ type: InstanceType) {
