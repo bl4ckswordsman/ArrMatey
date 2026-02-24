@@ -1,0 +1,51 @@
+ArrMatey is an all-in-one mobile companion for your home server media stack. Support for Sonarr, Radarr, and Lidar is included with many more coming!
+
+<b>Multi-Instance Support<b>
+<li>
+<ul>Manage multiple Sonarr, Radarr, and Lidarr instances</ul>
+<ul>Quick instance switching</ul>
+<ul>Custom instance labels and configurations</ul>
+</li>
+
+<b>Library Management</b>
+<li>
+<ul>Browse your entire media library with list and grid views</ul>
+<ul>Search and filter by title, quality, monitored status</ul>
+<ul>Sort by name, date added, size, and more</ul>
+<ul>View detailed media information including:</ul>
+<li>
+<ul>Episode lists with file status</ul>
+<ul>Season management</ul>
+<ul>Quality profiles and custom formats</ul>
+<ul>Files sizes and storage information</ul>
+</li>
+</li>
+
+<b>Interactive Search</b>
+<li>
+<ul>Manual search for releases</ul>
+<ul>Filter by quality, language, indexer, protocol</ul>
+<ul>View seeders, size, age, and custom format scores</ul>
+<ul>One-tap download with confirmation for rejected releases</ul>
+
+<b>Calendar View</b>
+<li>
+<ul>View upcoming episodes, movie, and album releases</ul>
+<ul>Switch between list and month views</ul>
+<ul>Filter by content type, monitored status, premiers/finales</ul>
+<ul>Scroll-to-today for easy navigation</ul>
+</li>
+
+<b>Activity Queue</b>
+<li>
+<ul>Real-time download monitoring</ul>
+<ul>View progress, ETA, and status</ul>
+<ul>Cancel downlaods with blocklist options</ul>
+<ul>Detaield queue item information</ul>
+</li>
+
+<b>Advanced Features</b>
+<li>
+<ul><b>Custom Headers:</b> Add custom HTTP headers per instance</ul>
+<ul><b>Slow Instance Mode:</b> Configurable timeout for remote instances</ul>
+</li>
