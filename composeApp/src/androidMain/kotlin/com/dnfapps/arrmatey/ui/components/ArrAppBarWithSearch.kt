@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 fun ArrAppBarWithSearch(
     textFieldState: TextFieldState,
     modifier: Modifier = Modifier,
+    textFieldEnabled: Boolean = true,
     searchBarState: SearchBarState = rememberSearchBarState(),
     searchPlaceholder: String = mokoString(MR.strings.search),
     scrollBehavior: SearchBarScrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
@@ -54,6 +55,7 @@ fun ArrAppBarWithSearch(
             SearchBarDefaults.InputField(
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
+                enabled = textFieldEnabled,
                 colors = SearchBarDefaults.inputFieldColors(),
                 onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
                 placeholder = {

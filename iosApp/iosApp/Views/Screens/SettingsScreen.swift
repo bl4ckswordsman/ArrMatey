@@ -87,6 +87,9 @@ struct SettingsScreen: View {
             }
             
             AboutCard(
+                onBugReportClick: { if let url = URL(string: MR.strings().bug_report_link.localized()) {
+                    openURL(url)
+                } },
                 onGitHubClick: { if let url = URL(string: MR.strings().app_link.localized()) {
                     openURL(url)
                 } },

@@ -196,6 +196,9 @@ fun SettingsScreen(
                 }
 
                 AboutCard(
+                    onBugReportClick = {
+                        context.openLink(moko.getString(MR.strings.bug_report_link))
+                    },
                     onGitHubClick = {
                         context.openLink(moko.getString(MR.strings.app_link))
                     },

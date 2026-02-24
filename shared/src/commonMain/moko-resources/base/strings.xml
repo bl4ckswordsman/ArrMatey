@@ -2,6 +2,7 @@
     <!-- General -->
     <string name="app_name">ArrMatey</string>
     <string name="app_link">https://github.com/owenlejeune/ArrMatey</string>
+    <string name="bug_report_link">https://github.com/owenlejeune/ArrMatey/issues/new/choose</string>
     <string name="bmac_link">https://buymeacoffee.com/owenlejeune</string>
     <string name="version_label">Version %1$s</string>
 
@@ -188,6 +189,7 @@
     <string name="no_issues">No issues</string>
     <string name="user_interface">User Interface</string>
     <string name="invalid_url">Invalid URL</string>
+    <string name="bug_report">Bug report</string>
 
     <!-- History Event Type -->
     <string name="grabbed">Grabbed</string>

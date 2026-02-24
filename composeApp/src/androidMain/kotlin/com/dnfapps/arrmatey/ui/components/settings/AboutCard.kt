@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.AssistChip
@@ -31,6 +32,7 @@ import com.dnfapps.arrmatey.utils.mokoString
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AboutCard(
+    onBugReportClick: () -> Unit,
     onGitHubClick: () -> Unit,
     onDonateClick: () -> Unit,
     onLibrariesClick: () -> Unit,
@@ -77,6 +79,18 @@ fun AboutCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically)
             ) {
+                AssistChip(
+                    onClick = onBugReportClick,
+                    label = { Text(mokoString(MR.strings.bug_report)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.BugReport,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
                 AssistChip(
                     onClick = onDonateClick,
                     label = { Text(mokoString(MR.strings.donate)) },

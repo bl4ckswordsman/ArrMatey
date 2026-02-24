@@ -7,8 +7,10 @@
 
 import SwiftUI
 import Shared
+import Flow
 
 struct AboutCard: View {
+    let onBugReportClick: () -> Void
     let onGitHubClick: () -> Void
     let onDonateClick: () -> Void
     let onLibrariesClick: () -> Void
@@ -30,7 +32,8 @@ struct AboutCard: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            HStack(spacing: 10) {
+            HFlow(spacing: 10) {
+                Chip(title: MR.strings().bug_report.localized(), icon: "ladybug.fill", action: onBugReportClick)
                 Chip(title: MR.strings().donate.localized(), icon: "heart", action: onDonateClick)
                 Chip(title: MR.strings().github.localized(), icon: "terminal", action: onGitHubClick)
                 Chip(title: MR.strings().libraries.localized(), icon: "book.closed", action: onLibrariesClick)

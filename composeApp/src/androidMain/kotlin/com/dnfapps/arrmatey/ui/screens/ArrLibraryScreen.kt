@@ -113,39 +113,38 @@ fun ArrLibraryScreen(
             }
         },
         topBar = {
-            instancesState.selectedInstance?.let {
-                ArrAppBarWithSearch(
-                    textFieldState = textFieldState,
-                    searchPlaceholder = mokoString(MR.strings.search_placeholder, instancesState.selectedInstance?.label ?: ""),
-                    trailingIcon = {
-                        Image(
-                            painter = painterResource(getDrawableId(type.iconKey)),
-                            contentDescription = mokoString(type.resource),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    navigationIcon = { NavigationDrawerButton() },
-                    actions = {
-                        InstancePicker(
-                            type = type,
-                            currentInstance = instancesState.selectedInstance,
-                            typeInstances = instancesState.instances,
-                            onInstanceSelected = { instancesViewModel.setInstanceActive(it) }
-                        )
-                        LibraryFilterMenu(
-                            type = type,
-                            filterBy = preferences.filterBy,
-                            onFilterByChanged = { arrMediaViewModel.updateFilterBy(it) },
-                            sortBy = preferences.sortBy,
-                            onSortByChanged = { arrMediaViewModel.updateSortBy(it) },
-                            sortOrder = preferences.sortOrder,
-                            onSortOrderChanged = { arrMediaViewModel.updateSortOrder(it) },
-                            viewType = preferences.viewType,
-                            onViewTypeChanged = { arrMediaViewModel.updateViewType(it) }
-                        )
-                    }
-                )
-            }
+            ArrAppBarWithSearch(
+                textFieldState = textFieldState,
+                textFieldEnabled = instancesState.selectedInstance != null,
+                searchPlaceholder = mokoString(MR.strings.search_placeholder, instancesState.selectedInstance?.label ?: ""),
+                trailingIcon = {
+                    Image(
+                        painter = painterResource(getDrawableId(type.iconKey)),
+                        contentDescription = mokoString(type.resource),
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                navigationIcon = { NavigationDrawerButton() },
+                actions = {
+                    InstancePicker(
+                        type = type,
+                        currentInstance = instancesState.selectedInstance,
+                        typeInstances = instancesState.instances,
+                        onInstanceSelected = { instancesViewModel.setInstanceActive(it) }
+                    )
+                    LibraryFilterMenu(
+                        type = type,
+                        filterBy = preferences.filterBy,
+                        onFilterByChanged = { arrMediaViewModel.updateFilterBy(it) },
+                        sortBy = preferences.sortBy,
+                        onSortByChanged = { arrMediaViewModel.updateSortBy(it) },
+                        sortOrder = preferences.sortOrder,
+                        onSortOrderChanged = { arrMediaViewModel.updateSortOrder(it) },
+                        viewType = preferences.viewType,
+                        onViewTypeChanged = { arrMediaViewModel.updateViewType(it) }
+                    )
+                }
+            )
         },
         contentWindowInsets = WindowInsets.statusBars
     ) { paddingValues ->
