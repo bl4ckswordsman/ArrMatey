@@ -33,7 +33,7 @@ See the main README for setup instructions.
 ### Branching & Target Rules
 
 - **Bug fixes and small changes**
-    - Open pull requests directly against `master`.
+    - Open pull requests directly against `main`.
 
 - **Larger features** (e.g., new integrations or substantial refactors)
     - Create and target a dedicated feature branch for all related PRs.
