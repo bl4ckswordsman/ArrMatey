@@ -111,5 +111,17 @@ enum class InstanceType(
         testEndpoint = "system/status",
         includeTopLevelAutomaticSearchOption = true,
         aspectRatio = AspectRatio.Cover
+    ),
+    Seerr(
+        resource = MR.strings.seerr_description,
+        github = "https://github.com/seerr-team/seerr",
+        website = "https://docs.seerr.dev/",
+        iconKey = "seerr",
+        defaultPort = 5055,
+        supportsActivityQueue = false,
+        apiBase = "api/v1",
+        testEndpoint = "auth/me",
+        includeTopLevelAutomaticSearchOption = false,
+        aspectRatio = AspectRatio.Poster
     )
 }

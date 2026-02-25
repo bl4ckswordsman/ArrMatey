@@ -35,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -108,8 +109,12 @@ fun SettingsScreen(
                 scrollBehavior = scrollBehavior
             )
         }
-    ) {
-        Box(modifier = Modifier.padding(it)) {
+    ) { paddingValues ->
+        PullToRefreshBox(
+            isRefreshing = instanceConnectionStatues.values.any { it is OperationStatus.InProgress },
+            onRefresh = { viewModel.refreshInstanceConnections() },
+            modifier = Modifier.padding(paddingValues)
+        ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)

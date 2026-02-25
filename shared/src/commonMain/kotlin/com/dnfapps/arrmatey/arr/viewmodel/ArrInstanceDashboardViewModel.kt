@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.dnfapps.arrmatey.arr.state.ArrDashboardState
 import com.dnfapps.arrmatey.client.ErrorType
 import com.dnfapps.arrmatey.instances.model.Instance
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class ArrInstanceDashboardViewModel(
     private val instanceId: Long,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<ArrDashboardState>(ArrDashboardState.Initial)
@@ -27,7 +27,7 @@ class ArrInstanceDashboardViewModel(
     private val _instance = MutableStateFlow<Instance?>(null)
     val instance: StateFlow<Instance?> = _instance.asStateFlow()
 
-    private var repository: InstanceScopedRepository? = null
+    private var repository: ArrInstanceRepository? = null
 
     init {
         loadInstanceAndObserve()
@@ -37,7 +37,7 @@ class ArrInstanceDashboardViewModel(
         viewModelScope.launch {
             _state.value = ArrDashboardState.Loading
 
-            repository = getInstanceRepositoryUseCase(instanceId)
+            repository = getArrInstanceRepositoryUseCase(instanceId)
             val currentRepo = repository
             if (currentRepo == null) {
                 _state.value = ArrDashboardState.Error(

@@ -1,13 +1,13 @@
 package com.dnfapps.arrmatey.instances.usecase
 
 import com.dnfapps.arrmatey.instances.repository.InstanceManager
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import kotlinx.coroutines.flow.Flow
 
 class ObserveSelectedInstanceScopedRepoUseCase(
     private val instanceManager: InstanceManager
 ) {
-    operator fun invoke(type: InstanceType): Flow<InstanceScopedRepository?> =
-        instanceManager.getSelectedRepository(type)
+    operator fun invoke(type: InstanceType): Flow<ArrInstanceRepository?> =
+        instanceManager.getSelectedArrRepository(type)
 }

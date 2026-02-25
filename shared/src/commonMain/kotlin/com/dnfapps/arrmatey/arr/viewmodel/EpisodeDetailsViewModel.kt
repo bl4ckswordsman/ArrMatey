@@ -10,8 +10,8 @@ import com.dnfapps.arrmatey.arr.usecase.PerformAutomaticSearchUseCase
 import com.dnfapps.arrmatey.arr.usecase.ToggleMonitorUseCase
 import com.dnfapps.arrmatey.client.OperationStatus
 import com.dnfapps.arrmatey.instances.model.InstanceType
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 class EpisodeDetailsViewModel(
     private val seriesId: Long,
     episode: Episode,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase,
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase,
     private val toggleMonitorUseCase: ToggleMonitorUseCase,
     private val performAutomaticSearchUseCase: PerformAutomaticSearchUseCase,
     private val getEpisodeHistoryUseCase: GetEpisodeHistoryUseCase,
@@ -42,7 +42,7 @@ class EpisodeDetailsViewModel(
     private val _deleteStatus = MutableStateFlow<OperationStatus>(OperationStatus.Idle)
     val deleteStatus: StateFlow<OperationStatus> = _deleteStatus.asStateFlow()
 
-    private var currentRepository: InstanceScopedRepository? = null
+    private var currentRepository: ArrInstanceRepository? = null
 
     init {
         observeSelectedInstance()
@@ -50,7 +50,7 @@ class EpisodeDetailsViewModel(
 
     private fun observeSelectedInstance() {
         viewModelScope.launch {
-            getInstanceRepositoryUseCase.observeSelected(InstanceType.Sonarr)
+            getArrInstanceRepositoryUseCase.observeSelected(InstanceType.Sonarr)
                 .filterNotNull()
                 .collectLatest { repository ->
                     currentRepository = repository
@@ -60,7 +60,7 @@ class EpisodeDetailsViewModel(
         }
     }
 
-    private fun observeData(repository: InstanceScopedRepository) {
+    private fun observeData(repository: ArrInstanceRepository) {
         viewModelScope.launch {
             repository.episodes
                 .map { episodesMap ->

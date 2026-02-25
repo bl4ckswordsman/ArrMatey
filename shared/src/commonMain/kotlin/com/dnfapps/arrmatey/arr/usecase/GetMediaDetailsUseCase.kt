@@ -1,9 +1,8 @@
 package com.dnfapps.arrmatey.arr.usecase
 
-import com.dnfapps.arrmatey.arr.api.model.ArrAlbum
 import com.dnfapps.arrmatey.arr.api.model.ArrMedia
 import com.dnfapps.arrmatey.instances.repository.InstanceManager
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 import com.dnfapps.arrmatey.arr.state.MediaDetailsUiState
 import com.dnfapps.arrmatey.client.NetworkResult
 import com.dnfapps.arrmatey.instances.model.InstanceType
@@ -18,7 +17,7 @@ class GetMediaDetailsUseCase(
     private val instanceManager: InstanceManager,
 ) {
     operator fun invoke(mediaId: Long, instanceId: Long): Flow<MediaDetailsUiState> = channelFlow {
-        val repository = instanceManager.getRepository(instanceId)
+        val repository = instanceManager.getArrRepository(instanceId)
         if (repository == null) {
             send(MediaDetailsUiState.Error(
                 message = "Instance not found"
@@ -49,6 +48,7 @@ class GetMediaDetailsUseCase(
                                 loadLidarrDetails(repository, mediaId, detailsResult.data)
                                     .collect { send(it) }
                             }
+                            else -> {}
                         }
                     }
                 }
@@ -56,7 +56,7 @@ class GetMediaDetailsUseCase(
     }
 
     private fun loadSonarrDetails(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         seriesId: Long,
         series: ArrMedia
     ): Flow<MediaDetailsUiState> = flow {
@@ -77,7 +77,7 @@ class GetMediaDetailsUseCase(
     }
 
     private fun loadRadarrDetails(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         movieId: Long,
         movie: ArrMedia
     ): Flow<MediaDetailsUiState> = flow {
@@ -98,7 +98,7 @@ class GetMediaDetailsUseCase(
     }
 
     private fun loadLidarrDetails(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         artistId: Long,
         artist: ArrMedia
     ): Flow<MediaDetailsUiState> = flow {

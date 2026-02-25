@@ -4,6 +4,7 @@ import com.dnfapps.arrmatey.arr.api.client.HttpClientFactory
 import com.dnfapps.arrmatey.database.InstanceRepository
 import com.dnfapps.arrmatey.instances.model.Instance
 import com.dnfapps.arrmatey.instances.model.InstanceType
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,24 +51,53 @@ class InstanceManager(
         instances.forEach { instance ->
             if (!currentRepos.containsKey(instance.id)) {
                 val httpClient = httpClientFactory.create(instance)
-                currentRepos[instance.id] = InstanceScopedRepository(instance, httpClient)
+                currentRepos[instance.id] = createScopedRepository(instance, httpClient)
             }
         }
 
         _instanceRepositories.value = currentRepos
     }
 
+    private fun createScopedRepository(instance: Instance, httpClient: HttpClient): InstanceScopedRepository {
+        return when (instance.type) {
+            InstanceType.Seerr -> SeerrInstanceRepository(instance, httpClient)
+            InstanceType.Sonarr,
+            InstanceType.Radarr,
+            InstanceType.Lidarr -> ArrInstanceRepository(instance, httpClient)
+        }
+    }
+
+    fun getArrRepository(instanceId: Long): ArrInstanceRepository? =
+        _instanceRepositories.value[instanceId] as? ArrInstanceRepository?
+
+    fun getSeerrRepository(instanceId: Long): SeerrInstanceRepository? =
+        _instanceRepositories.value[instanceId] as? SeerrInstanceRepository
+
     fun getRepository(instanceId: Long): InstanceScopedRepository? =
         _instanceRepositories.value[instanceId]
 
-    fun getSelectedRepository(type: InstanceType): Flow<InstanceScopedRepository?> =
+    fun getSelectedArrRepository(type: InstanceType): Flow<ArrInstanceRepository?> =
         instanceRepository.observeSelectedInstance(type)
             .map { instance ->
-                instance?.let { getRepository(it.id) }
+                instance?.let { getArrRepository(it.id) }
+            }
+
+    fun getSelectedSeerrRepository(): Flow<SeerrInstanceRepository?> =
+        instanceRepository.observeSelectedInstance(InstanceType.Seerr)
+            .map { instance ->
+                instance?.let { getSeerrRepository(it.id) }
             }
 
     fun getAllRepositories(): List<InstanceScopedRepository> {
         return _instanceRepositories.value.values.toList()
+    }
+
+    fun getAllArrRepositories(): List<ArrInstanceRepository> {
+        return _instanceRepositories.value.values.filterIsInstance<ArrInstanceRepository>()
+    }
+
+    fun getAllSeerrRepositories(): List<SeerrInstanceRepository> {
+        return _instanceRepositories.value.values.filterIsInstance<SeerrInstanceRepository>()
     }
 
     fun repositoriesByType(type: InstanceType): Flow<List<InstanceScopedRepository>> =
@@ -80,18 +110,6 @@ class InstanceManager(
     fun getRepositoriesByType(type: InstanceType): List<InstanceScopedRepository> {
         return _instanceRepositories.value.values
             .filter { it.instance.type == type }
-    }
-
-    fun refreshAllLibraries() {
-        _instanceRepositories.value.values.forEach { repo ->
-            scope.launch { repo.refreshLibrary() }
-        }
-    }
-
-    fun refreshAllMetadata() {
-        _instanceRepositories.value.values.forEach { repo ->
-            scope.launch { repo.refreshAllMetadata() }
-        }
     }
 
     fun cleanup() {

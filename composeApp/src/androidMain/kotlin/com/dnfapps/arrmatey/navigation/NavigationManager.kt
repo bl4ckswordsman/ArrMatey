@@ -23,17 +23,15 @@ class NavigationManager(
     val overlayTab: StateFlow<TabItem?> = _overlayTab.asStateFlow()
 
     fun settings() = settingsNavigation
-
     fun series() = seriesNavigation
-
     fun movies() = movieNavigation
-
     fun music() = musicNavigation
 
     fun arr(type: InstanceType) = when (type) {
         InstanceType.Sonarr -> seriesNavigation
         InstanceType.Radarr -> movieNavigation
         InstanceType.Lidarr -> musicNavigation
+        else -> TODO()
     }
 
     fun setSelectedTab(tab: TabItem) {

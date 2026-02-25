@@ -6,9 +6,9 @@ import com.dnfapps.arrmatey.arr.api.model.ArrMedia
 import com.dnfapps.arrmatey.arr.api.model.QualityProfile
 import com.dnfapps.arrmatey.arr.api.model.RootFolder
 import com.dnfapps.arrmatey.arr.api.model.Tag
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 import com.dnfapps.arrmatey.arr.usecase.AddMediaItemUseCase
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.client.OperationStatus
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class MediaPreviewViewModel(
     private val instanceType: InstanceType,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase,
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase,
     private val addMediaUseCase: AddMediaItemUseCase
 ): ViewModel() {
 
@@ -39,7 +39,7 @@ class MediaPreviewViewModel(
     private val _lastAddedItemId = MutableStateFlow<Long?>(null)
     val lastAddedItemId: StateFlow<Long?> = _lastAddedItemId.asStateFlow()
 
-    private var currentRepository: InstanceScopedRepository? = null
+    private var currentRepository: ArrInstanceRepository? = null
 
     init {
         observeSelectedInstance()
@@ -47,7 +47,7 @@ class MediaPreviewViewModel(
 
     private fun observeSelectedInstance() {
         viewModelScope.launch {
-            getInstanceRepositoryUseCase.observeSelected(instanceType)
+            getArrInstanceRepositoryUseCase.observeSelected(instanceType)
                 .filterNotNull()
                 .collectLatest { repository ->
                     currentRepository = repository
@@ -57,7 +57,7 @@ class MediaPreviewViewModel(
         }
     }
 
-    private fun observeData(repository: InstanceScopedRepository) {
+    private fun observeData(repository: ArrInstanceRepository) {
         viewModelScope.launch {
             repository.qualityProfiles.collect { profiles ->
                 _qualityProfiles.emit(profiles)

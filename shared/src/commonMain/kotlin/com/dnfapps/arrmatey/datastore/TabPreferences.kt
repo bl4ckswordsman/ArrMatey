@@ -8,5 +8,5 @@ data class TabPreferences(
     val bottomTabItems: List<TabItem> = TabItem.defaultEntries,
     val hiddenTabs: List<TabItem> = TabItem.defaultHidden
 ) {
-    constructor(): this(TabItem.defaultEntries, emptyList())
+    constructor(): this(TabItem.defaultEntries, TabItem.defaultHidden)
 }

@@ -22,7 +22,7 @@ class DeleteQueueItemUseCase(
             emit(OperationStatus.Error(message = "Queue item is not linked to any instance"))
             return@flow
         }
-        val repository = instanceManager.getRepository(instanceId) ?: run {
+        val repository = instanceManager.getArrRepository(instanceId) ?: run {
             emit(OperationStatus.Error(message = "Instance cannot be found"))
             return@flow
         }

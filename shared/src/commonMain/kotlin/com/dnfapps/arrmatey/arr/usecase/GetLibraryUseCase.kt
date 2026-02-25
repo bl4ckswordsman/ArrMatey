@@ -8,7 +8,6 @@ import com.dnfapps.arrmatey.client.ErrorType
 import com.dnfapps.arrmatey.client.NetworkResult
 import com.dnfapps.arrmatey.compose.utils.FilterBy
 import com.dnfapps.arrmatey.compose.utils.SortBy
-import com.dnfapps.arrmatey.compose.utils.SortOrder
 import com.dnfapps.arrmatey.datastore.InstancePreferenceStoreRepository
 import com.dnfapps.arrmatey.datastore.InstancePreferences
 import com.dnfapps.arrmatey.extensions.orderedSortedWith
@@ -25,7 +24,7 @@ class GetLibraryUseCase(
     private val preferencesStoreRepository: InstancePreferenceStoreRepository
 ) {
     operator fun invoke(instanceId: Long): Flow<ArrLibrary> = flow {
-        val repository = instanceManager.getRepository(instanceId)
+        val repository = instanceManager.getArrRepository(instanceId)
         if (repository == null) {
             emit(ArrLibrary.Error("Instance not found", ErrorType.Unexpected))
             return@flow

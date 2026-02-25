@@ -19,7 +19,7 @@ import com.dnfapps.arrmatey.compose.utils.ReleaseSortBy
 import com.dnfapps.arrmatey.compose.utils.SortOrder
 import com.dnfapps.arrmatey.extensions.orderedSortedWith
 import com.dnfapps.arrmatey.instances.model.InstanceType
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +34,7 @@ class InteractiveSearchViewModel(
     defaultFilterBy: ReleaseFilterBy,
     private val getReleasesUseCase: GetReleasesUseCase,
     private val downloadReleaseUseCase: DownloadReleaseUseCase,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase
 ): ViewModel() {
 
     private val _releaseUiState = MutableStateFlow<ReleaseLibrary>(ReleaseLibrary.Initial)
@@ -129,7 +129,7 @@ class InteractiveSearchViewModel(
 
     private fun observeDownloadStatus() {
         viewModelScope.launch {
-            getInstanceRepositoryUseCase.observeSelected(instanceType)
+            getArrInstanceRepositoryUseCase.observeSelected(instanceType)
                 .filterNotNull()
                 .collectLatest { repository ->
                     repository.downloadStatus.collect { status ->

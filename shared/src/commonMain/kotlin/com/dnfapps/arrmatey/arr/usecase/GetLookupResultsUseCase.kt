@@ -15,7 +15,7 @@ class GetLookupResultsUseCase(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(type: InstanceType): Flow<ArrLibrary> =
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .filterNotNull()
             .flatMapLatest { repository ->
                 repository.lookupResults.map { result ->

@@ -44,10 +44,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class InstanceScopedRepository(
-    val instance: Instance,
+class ArrInstanceRepository(
+    override val instance: Instance,
     private val httpClient: HttpClient
-) {
+): InstanceScopedRepository {
     val client: ArrClient = createClient()
 
     val sonarrClient: SonarrClient
@@ -60,10 +60,11 @@ class InstanceScopedRepository(
         get() = client as? LidarrClient ?: throw IllegalStateException("Client is not a LidarrClient instance")
 
     private fun createClient(): ArrClient = when (instance.type) {
-            InstanceType.Sonarr -> SonarrClient(instance, httpClient)
-            InstanceType.Radarr -> RadarrClient(instance, httpClient)
-            InstanceType.Lidarr -> LidarrClient(instance, httpClient)
-        }
+        InstanceType.Sonarr -> SonarrClient(instance, httpClient)
+        InstanceType.Radarr -> RadarrClient(instance, httpClient)
+        InstanceType.Lidarr -> LidarrClient(instance, httpClient)
+        else -> TODO()
+    }
 
     private val _library = MutableStateFlow<NetworkResult<List<ArrMedia>>?>(null)
     val library: StateFlow<NetworkResult<List<ArrMedia>>?> = _library.asStateFlow()
@@ -141,7 +142,7 @@ class InstanceScopedRepository(
     private val _artistTrackFiles = MutableStateFlow<Map<Long, Map<Long, List<LidarrTrackFile>>>>(emptyMap())
     val artistTrackFiles: StateFlow<Map<Long, Map<Long, List<LidarrTrackFile>>>> = _artistTrackFiles.asStateFlow()
 
-    suspend fun testConnection(): NetworkResult<Unit> {
+    override suspend fun testConnection(): NetworkResult<Unit> {
         return client.testConnection()
     }
 

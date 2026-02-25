@@ -7,12 +7,12 @@ import com.dnfapps.arrmatey.arr.api.model.ArrSeries
 import com.dnfapps.arrmatey.arr.api.model.Arrtist
 import com.dnfapps.arrmatey.arr.api.model.Episode
 import com.dnfapps.arrmatey.client.NetworkResult
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 
 class ToggleMonitorUseCase {
     suspend fun toggleMedia(
         item: ArrMedia,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<ArrMedia> {
         val updatedItem = when (item) {
             is ArrSeries -> item.copy(monitored = !item.monitored)
@@ -25,21 +25,21 @@ class ToggleMonitorUseCase {
     suspend fun toggleSeason(
         seriesId: Long,
         seasonNumber: Int,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<ArrMedia> {
         return repository.toggleSeasonMonitor(seriesId, seasonNumber)
     }
 
     suspend fun toggleEpisode(
         episode: Episode,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<Episode> {
         return repository.toggleEpisodeMonitor(episode)
     }
 
     suspend fun toggleAlbum(
         album: ArrAlbum,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<ArrAlbum> {
         return repository.toggleAlbumMonitor(album)
     }

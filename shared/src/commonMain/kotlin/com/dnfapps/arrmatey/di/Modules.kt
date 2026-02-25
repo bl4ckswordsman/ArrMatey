@@ -10,7 +10,7 @@ import com.dnfapps.arrmatey.instances.usecase.DismissInfoCardUseCase
 import com.dnfapps.arrmatey.arr.usecase.DownloadReleaseUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetActivityTasksUseCase
 import com.dnfapps.arrmatey.instances.usecase.GetInstanceByIdUseCase
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetLibraryUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetLookupResultsUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetMediaDetailsUseCase
@@ -62,8 +62,12 @@ import com.dnfapps.arrmatey.datastore.DataStoreFactory
 import com.dnfapps.arrmatey.datastore.InstancePreferenceStoreRepository
 import com.dnfapps.arrmatey.datastore.PreferencesStore
 import com.dnfapps.arrmatey.instances.model.InstanceType
+import com.dnfapps.arrmatey.instances.usecase.GetSeerrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.instances.usecase.TestInstanceConnectionUseCase
 import com.dnfapps.arrmatey.instances.usecase.UpdateCalendarFilterPreferenceUseCase
+import com.dnfapps.arrmatey.seerr.usecase.GetCurrentSeerrUserUseCase
+import com.dnfapps.arrmatey.seerr.usecase.GetRequestsUseCase
+import com.dnfapps.arrmatey.seerr.viewmodel.RequestsViewModel
 import com.dnfapps.arrmatey.utils.MokoStrings
 import com.dnfapps.arrmatey.utils.NetworkConnectivityObserverFactory
 import com.dnfapps.arrmatey.utils.NetworkConnectivityRepository
@@ -113,7 +117,7 @@ val serviceModule = module {
 }
 
 val useCaseModule = module {
-    factory { GetInstanceRepositoryUseCase(get()) }
+    factory { GetArrInstanceRepositoryUseCase(get()) }
     factory { GetLibraryUseCase(get(), get()) }
     factory { GetMediaDetailsUseCase(get()) }
     factory { UpdateInstancePreferencesUseCase(get()) }
@@ -149,6 +153,9 @@ val useCaseModule = module {
     factory { GetCalendarUseCase(get()) }
     factory { DeleteAlbumFilesUseCase() }
     factory { UpdateCalendarFilterPreferenceUseCase(get()) }
+    factory { GetSeerrInstanceRepositoryUseCase(get()) }
+    factory { GetCurrentSeerrUserUseCase() }
+    factory { GetRequestsUseCase() }
 }
 
 val viewModelModule = module {
@@ -186,6 +193,7 @@ val viewModelModule = module {
         ArrInstanceDashboardViewModel(instanceId, get())
     }
     factory { CalendarViewModel(get(), get(), get(), get()) }
+    factory { RequestsViewModel(get(), get(), get()) }
 }
 
 val resourcesModule = module {

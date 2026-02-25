@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -31,6 +30,7 @@ class PreferencesStore(
     private val sonarrInfoCardKey = booleanPreferencesKey("sonarrInfoCard")
     private val radarrInfoCardKey = booleanPreferencesKey("radarrInfoCard")
     private val lidarrInfoCardKey = booleanPreferencesKey("lidarrInfoCard")
+    private val seerrInfoCardKey = booleanPreferencesKey("seerrInfoCard")
     private val calendarViewTypeKey = stringPreferencesKey("calendarViewType")
     private val calendarContentFilterKey = stringPreferencesKey("calendarContentFilter")
     private val calendarMonitorOnlyKey = booleanPreferencesKey("calendarMonitorOnly")
@@ -47,22 +47,14 @@ class PreferencesStore(
         InstanceType.Sonarr -> sonarrInfoCardKey
         InstanceType.Radarr -> radarrInfoCardKey
         InstanceType.Lidarr -> lidarrInfoCardKey
+        InstanceType.Seerr -> seerrInfoCardKey
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
     val tabPreferences: Flow<TabPreferences> = dataStore.data
         .map { preferences ->
-            val json = preferences[tabPreferencesKey]
-            if (json != null) {
-                try {
-                    Json.decodeFromString<TabPreferences>(json)
-                } catch (e: Exception) {
-                    TabPreferences()
-                }
-            } else {
-                TabPreferences()
-            }
+            extractTabPreferences(preferences)
         }
 
     val showInfoCards: Flow<Map<InstanceType, Boolean>> = dataStore.data
@@ -220,7 +212,7 @@ class PreferencesStore(
                 throw IllegalArgumentException("At least one tab must be visible")
             }
 
-            val hidden = TabItem.bottomEntries.filter { !validTabs.contains(it) }
+            val hidden = TabItem.navigationEntries.filter { !validTabs.contains(it) }
 
             saveTabPreferences(
                 TabPreferences(
@@ -228,6 +220,29 @@ class PreferencesStore(
                     hiddenTabs = hidden
                 )
             )
+        }
+    }
+
+    private fun extractTabPreferences(preferences: Preferences): TabPreferences {
+        val json = preferences[tabPreferencesKey]
+        val savedPrefs = if (json != null) {
+            try {
+                Json.decodeFromString<TabPreferences>(json)
+            } catch (e: Exception) {
+                TabPreferences()
+            }
+        } else {
+            TabPreferences()
+        }
+
+        val allTabs = TabItem.navigationEntries
+        val displayedAndHidden = savedPrefs.bottomTabItems + savedPrefs.hiddenTabs
+        val newTabs = allTabs.filter { it !in displayedAndHidden }
+
+        return if (newTabs.isNotEmpty()) {
+            savedPrefs.copy(hiddenTabs = savedPrefs.hiddenTabs + newTabs)
+        } else {
+            savedPrefs
         }
     }
 

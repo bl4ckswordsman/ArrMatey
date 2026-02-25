@@ -58,4 +58,14 @@ class MoreScreenViewModel(
         }
     }
 
+    fun refreshInstanceConnections() {
+        viewModelScope.launch {
+            instances.collect { currentInstances ->
+                currentInstances.forEach { instance ->
+                    testInstance(instance.id)
+                }
+            }
+        }
+    }
+
 }

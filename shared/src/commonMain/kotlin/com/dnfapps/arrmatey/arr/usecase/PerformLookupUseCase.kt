@@ -8,13 +8,13 @@ class PerformLookupUseCase(
     private val instanceManager: InstanceManager
 ) {
     suspend operator fun invoke(type: InstanceType, query: String) {
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .firstOrNull()
             ?.performLookup(query)
     }
 
     suspend fun clear(type: InstanceType) {
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .firstOrNull()
             ?.clearLookup()
     }

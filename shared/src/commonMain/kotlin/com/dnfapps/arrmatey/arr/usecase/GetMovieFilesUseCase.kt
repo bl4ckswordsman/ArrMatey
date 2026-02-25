@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class GetMovieFilesUseCase(
@@ -18,7 +17,7 @@ class GetMovieFilesUseCase(
 ) {
 
     operator fun invoke(movieId: Long): Flow<MovieFilesState> = channelFlow {
-        instanceManager.getSelectedRepository(InstanceType.Radarr)
+        instanceManager.getSelectedArrRepository(InstanceType.Radarr)
             .filterNotNull()
             .collectLatest { repository ->
                 repository.getMovieExtraFiles(movieId)
@@ -37,7 +36,7 @@ class GetMovieFilesUseCase(
     }
 
     suspend fun refreshHistory(movieId: Long) {
-        instanceManager.getSelectedRepository(InstanceType.Radarr)
+        instanceManager.getSelectedArrRepository(InstanceType.Radarr)
             .firstOrNull()
             ?.getItemHistory(movieId)
     }

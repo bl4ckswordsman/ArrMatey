@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dnfapps.arrmatey.arr.api.model.ArrAlbum
 import com.dnfapps.arrmatey.arr.api.model.ArrMedia
-import com.dnfapps.arrmatey.arr.api.model.Arrtist
 import com.dnfapps.arrmatey.arr.api.model.Episode
 import com.dnfapps.arrmatey.arr.api.model.HistoryItem
 import com.dnfapps.arrmatey.arr.api.model.QualityProfile
@@ -23,8 +22,8 @@ import com.dnfapps.arrmatey.client.OperationStatus
 import com.dnfapps.arrmatey.client.onError
 import com.dnfapps.arrmatey.client.onSuccess
 import com.dnfapps.arrmatey.instances.model.InstanceType
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +35,7 @@ import kotlinx.coroutines.launch
 class ArrMediaDetailsViewModel(
     private val mediaId: Long,
     private val instanceType: InstanceType,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase,
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase,
     private val getMediaDetailsUseCase: GetMediaDetailsUseCase,
     private val toggleMonitorUseCase: ToggleMonitorUseCase,
     private val performAutomaticSearchUseCase: PerformAutomaticSearchUseCase,
@@ -87,7 +86,7 @@ class ArrMediaDetailsViewModel(
     private val _tags = MutableStateFlow<List<Tag>>(emptyList())
     val tags: StateFlow<List<Tag>> = _tags.asStateFlow()
 
-    private var currentRepository: InstanceScopedRepository? = null
+    private var currentRepository: ArrInstanceRepository? = null
 
     init {
         observeSelectedInstance()
@@ -95,7 +94,7 @@ class ArrMediaDetailsViewModel(
 
     private fun observeSelectedInstance() {
         viewModelScope.launch {
-            getInstanceRepositoryUseCase.observeSelected(instanceType)
+            getArrInstanceRepositoryUseCase.observeSelected(instanceType)
                 .filterNotNull()
                 .collectLatest { repository ->
                     currentRepository = repository
@@ -104,7 +103,7 @@ class ArrMediaDetailsViewModel(
         }
     }
 
-    private fun loadData(repository: InstanceScopedRepository) {
+    private fun loadData(repository: ArrInstanceRepository) {
         viewModelScope.launch {
             getMediaDetailsUseCase(mediaId, repository.instance.id)
                 .collect { state ->

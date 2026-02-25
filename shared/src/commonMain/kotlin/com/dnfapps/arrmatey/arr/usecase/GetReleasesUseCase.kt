@@ -22,7 +22,7 @@ class GetReleasesUseCase(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(type: InstanceType): Flow<ReleaseLibrary> =
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .filterNotNull()
             .flatMapLatest { repository ->
                 repository.releases.map { result ->
@@ -85,13 +85,13 @@ class GetReleasesUseCase(
     }
 
     suspend fun fetch(type: InstanceType, params: ReleaseParams) {
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .firstOrNull()
             ?.getReleases(params)
     }
 
     suspend fun clear(type: InstanceType) {
-        instanceManager.getSelectedRepository(type)
+        instanceManager.getSelectedArrRepository(type)
             .firstOrNull()
             ?.clearReleases()
     }

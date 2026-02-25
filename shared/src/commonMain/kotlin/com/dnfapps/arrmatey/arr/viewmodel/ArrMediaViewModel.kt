@@ -12,8 +12,8 @@ import com.dnfapps.arrmatey.compose.utils.SortOrder
 import com.dnfapps.arrmatey.datastore.InstancePreferences
 import com.dnfapps.arrmatey.instances.model.InstanceData
 import com.dnfapps.arrmatey.instances.model.InstanceType
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
-import com.dnfapps.arrmatey.instances.usecase.GetInstanceRepositoryUseCase
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
+import com.dnfapps.arrmatey.instances.usecase.GetArrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.instances.usecase.UpdateInstancePreferencesUseCase
 import com.dnfapps.arrmatey.ui.theme.ViewType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class ArrMediaViewModel(
     private val instanceType: InstanceType,
-    private val getInstanceRepositoryUseCase: GetInstanceRepositoryUseCase,
+    private val getArrInstanceRepositoryUseCase: GetArrInstanceRepositoryUseCase,
     private val getLibraryUseCase: GetLibraryUseCase,
     private val updatePreferencesUseCase: UpdateInstancePreferencesUseCase
 ): ViewModel() {
@@ -51,9 +51,9 @@ class ArrMediaViewModel(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    private var currentRepository: InstanceScopedRepository? = null
+    private var currentRepository: ArrInstanceRepository? = null
 
-    private val selectedRepository = getInstanceRepositoryUseCase
+    private val selectedRepository = getArrInstanceRepositoryUseCase
         .observeSelected(instanceType)
         .filterNotNull()
         .distinctUntilChanged { old, new ->

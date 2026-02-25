@@ -16,7 +16,7 @@ class AddMediaItemUseCase(
         instanceType: InstanceType,
         item: ArrMedia
     ): Flow<OperationStatus> = flow {
-        val repository = instanceManager.getSelectedRepository(instanceType)
+        val repository = instanceManager.getSelectedArrRepository(instanceType)
             .firstOrNull()
 
         if (repository == null) {

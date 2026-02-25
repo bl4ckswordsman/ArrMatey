@@ -8,7 +8,7 @@ import com.dnfapps.arrmatey.client.onError
 import com.dnfapps.arrmatey.client.onSuccess
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.instances.repository.InstanceManager
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -89,7 +89,7 @@ class CalendarService(
     }
 
     private suspend fun fetch(start: LocalDate, end: LocalDate) {
-        val repositories = instanceManager.getAllRepositories()
+        val repositories = instanceManager.getAllArrRepositories()
 
         coroutineScope {
             repositories.forEach { repository ->
@@ -98,6 +98,7 @@ class CalendarService(
                         InstanceType.Radarr -> fetchMovies(repository, start, end)
                         InstanceType.Sonarr -> fetchEpisodes(repository, start, end)
                         InstanceType.Lidarr -> fetchAlbums(repository, start, end)
+                        else -> {}
                     }
                 }
             }
@@ -107,7 +108,7 @@ class CalendarService(
     }
 
     private suspend fun fetchMovies(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         start: LocalDate,
         end: LocalDate
     ) {
@@ -158,7 +159,7 @@ class CalendarService(
     }
 
     private suspend fun fetchEpisodes(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         start: LocalDate,
         end: LocalDate
     ) {
@@ -234,7 +235,7 @@ class CalendarService(
     }
 
     private suspend fun fetchAlbums(
-        repository: InstanceScopedRepository,
+        repository: ArrInstanceRepository,
         start: LocalDate,
         end: LocalDate
     ) {

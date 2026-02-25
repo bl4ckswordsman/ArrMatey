@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Schedule
@@ -40,6 +41,7 @@ val TabItem.androidIcon: ImageVector
         TabItem.MUSIC -> Icons.Default.MusicNote
         TabItem.ACTIVITY -> Icons.Default.Download
         TabItem.CALENDAR -> Icons.Default.CalendarMonth
+        TabItem.REQUESTS -> Icons.Default.Inbox
         TabItem.SETTINGS -> Icons.Default.Settings
     }
 

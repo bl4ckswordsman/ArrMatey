@@ -19,6 +19,7 @@ import com.dnfapps.arrmatey.arr.viewmodel.MovieFilesViewModel
 import com.dnfapps.arrmatey.compose.utils.ReleaseFilterBy
 import com.dnfapps.arrmatey.datastore.PreferencesStore
 import com.dnfapps.arrmatey.instances.model.InstanceType
+import com.dnfapps.arrmatey.seerr.viewmodel.RequestsViewModel
 import com.dnfapps.arrmatey.utils.MokoStrings
 import org.koin.core.component.KoinComponent
 import org.koin.core.parameter.parametersOf
@@ -63,6 +64,9 @@ object KoinBridge: KoinComponent {
 
     fun getArrInstanceDashboardViewModel(instanceId: Long): ArrInstanceDashboardViewModel =
         getKoin().get { parametersOf(instanceId) }
+
+    fun getRequestsViewModel(): RequestsViewModel =
+        getKoin().get()
 
 
     fun getGenericClient(): GenericClient =

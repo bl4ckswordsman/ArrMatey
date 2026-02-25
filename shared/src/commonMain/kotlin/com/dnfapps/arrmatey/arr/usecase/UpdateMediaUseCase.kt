@@ -2,12 +2,12 @@ package com.dnfapps.arrmatey.arr.usecase
 
 import com.dnfapps.arrmatey.arr.api.model.ArrMedia
 import com.dnfapps.arrmatey.client.NetworkResult
-import com.dnfapps.arrmatey.instances.repository.InstanceScopedRepository
+import com.dnfapps.arrmatey.instances.repository.ArrInstanceRepository
 
 class UpdateMediaUseCase {
     suspend operator fun invoke(
         item: ArrMedia,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<ArrMedia> {
         return repository.updateMediaItem(item)
     }
@@ -15,7 +15,7 @@ class UpdateMediaUseCase {
     suspend fun edit(
         item: ArrMedia,
         moveFiles: Boolean,
-        repository: InstanceScopedRepository
+        repository: ArrInstanceRepository
     ): NetworkResult<Unit> {
         return repository.editMediaItem(item, moveFiles)
     }
