@@ -457,7 +457,7 @@ private fun ConfirmDeleteAlert(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ),
-                enabled = deleteInProgress
+                enabled = !deleteInProgress
             ) {
                 if (deleteInProgress) {
                     CircularProgressIndicator(
