@@ -20,6 +20,7 @@ struct TabItemContent: View {
             case .music: MusicTab()
             case .activity: ActivityTab()
             case .calendar: CalendarTab()
+            case .requests: EmptyView()
             case .settings: SettingsScreen()
             }
         }
