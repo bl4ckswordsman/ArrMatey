@@ -32,10 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dnfapps.arrmatey.arr.viewmodel.EditInstanceViewModel
 import com.dnfapps.arrmatey.database.dao.InsertResult
-import com.dnfapps.arrmatey.di.koinInjectParams
 import com.dnfapps.arrmatey.navigation.SettingsNavigation
 import com.dnfapps.arrmatey.shared.MR
-import com.dnfapps.arrmatey.utils.MokoStrings
+import com.dnfapps.arrmatey.utils.koinInjectParams
 import com.dnfapps.arrmatey.utils.mokoString
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject

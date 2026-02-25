@@ -81,7 +81,8 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
     compileOptions {
@@ -108,22 +109,4 @@ aboutLibraries {
         outputFile = file(layout.projectDirectory.file("../shared/src/commonMain/resources/aboutLibraries.json"))
         prettyPrint = true
     }
-}
-
-tasks.register<Copy>("exportLibrariesToIOS") {
-    group = "build"
-    description = "Copy AboutLibraries JSON from shared to iOS"
-
-    dependsOn("exportLibraryDefinitions")
-
-    from(layout.projectDirectory.dir("../shared/src/commonMain/resources"))
-    into(layout.projectDirectory.dir("../iosApp/iosApp/Resources"))
-    include("aboutLibraries.json")
-}
-
-afterEvaluate {
-    tasks.matching { it.name.startsWith("compile") && it.name.contains("Kotlin") }
-        .configureEach {
-            finalizedBy(tasks.named("exportLibrariesToIOS"))
-        }
 }

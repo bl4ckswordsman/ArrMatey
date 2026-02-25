@@ -22,11 +22,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.dnfapps.arrmatey.compose.icons.Hard_drive
 import com.dnfapps.arrmatey.instances.model.Instance
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.navigation.NavigationManager
 import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.ui.icons.Hard_drive
 import com.dnfapps.arrmatey.utils.mokoString
 import org.koin.compose.koinInject
 

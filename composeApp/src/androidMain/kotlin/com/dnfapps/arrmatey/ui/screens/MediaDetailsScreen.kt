@@ -65,7 +65,6 @@ import com.dnfapps.arrmatey.arr.state.MediaDetailsUiState
 import com.dnfapps.arrmatey.arr.viewmodel.ArrMediaDetailsViewModel
 import com.dnfapps.arrmatey.client.OperationStatus
 import com.dnfapps.arrmatey.compose.utils.bytesAsFileSizeString
-import com.dnfapps.arrmatey.di.koinInjectParams
 import com.dnfapps.arrmatey.entensions.copy
 import com.dnfapps.arrmatey.entensions.headerBarColors
 import com.dnfapps.arrmatey.instances.model.InstanceType
@@ -87,6 +86,7 @@ import com.dnfapps.arrmatey.ui.sheets.EditArtistSheet
 import com.dnfapps.arrmatey.ui.sheets.EditMovieSheet
 import com.dnfapps.arrmatey.ui.sheets.EditSeriesSheet
 import com.dnfapps.arrmatey.utils.format
+import com.dnfapps.arrmatey.utils.koinInjectParams
 import com.dnfapps.arrmatey.utils.mokoString
 import org.koin.compose.koinInject
 import kotlin.time.ExperimentalTime

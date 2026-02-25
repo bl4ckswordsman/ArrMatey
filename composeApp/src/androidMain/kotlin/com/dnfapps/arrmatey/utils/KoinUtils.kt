@@ -1,4 +1,4 @@
-package com.dnfapps.arrmatey.di
+package com.dnfapps.arrmatey.utils
 
 import androidx.compose.runtime.Composable
 import org.koin.compose.koinInject

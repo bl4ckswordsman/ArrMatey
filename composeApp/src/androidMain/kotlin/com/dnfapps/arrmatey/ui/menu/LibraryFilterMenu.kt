@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import com.dnfapps.arrmatey.compose.utils.FilterBy
 import com.dnfapps.arrmatey.compose.utils.SortBy
 import com.dnfapps.arrmatey.compose.utils.SortOrder
+import com.dnfapps.arrmatey.entensions.imageVector
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.ui.theme.ViewType
 import com.dnfapps.arrmatey.utils.mokoString

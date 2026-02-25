@@ -1,6 +1,5 @@
-package com.dnfapps.arrmatey.compose.icons
+package com.dnfapps.arrmatey.ui.icons
 
-import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -10,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Hard_drive: ImageVector
     get() {
         if (_Hard_drive != null) return _Hard_drive!!
-        
+
         _Hard_drive = ImageVector.Builder(
             name = "Hard_drive",
             defaultWidth = 24.dp,
@@ -59,7 +58,7 @@ val Hard_drive: ImageVector
                 close()
             }
         }.build()
-        
+
         return _Hard_drive!!
     }
 

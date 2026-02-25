@@ -27,15 +27,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.dnfapps.arrmatey.R
 import com.dnfapps.arrmatey.arr.state.CalendarFilterState
 import com.dnfapps.arrmatey.arr.state.ContentFilter
-import com.dnfapps.arrmatey.compose.icons.Hard_drive
+import com.dnfapps.arrmatey.entensions.imageVector
 import com.dnfapps.arrmatey.instances.model.Instance
 import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.ui.icons.Hard_drive
 import com.dnfapps.arrmatey.utils.mokoString
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
