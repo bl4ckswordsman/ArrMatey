@@ -277,6 +277,7 @@
     <string name="no_query_results">No results for \"%1$s\" in your library</string>
     <string name="no_query_results_label">Check your spelling or</string>
     <string name="no_query_results_link">add a new %1$s</string>
+    <string name="no_results_found">No results found</string>
 
     <!-- Calendar -->
     <string name="calendar">Calendar</string>
