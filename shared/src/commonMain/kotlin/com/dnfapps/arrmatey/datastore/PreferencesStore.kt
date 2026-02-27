@@ -227,6 +227,12 @@ class PreferencesStore(
         }
     }
 
+    fun updateTabPreferences(tabPreferences: TabPreferences) {
+        scope.launch {
+            saveTabPreferences(tabPreferences)
+        }
+    }
+
     private fun extractTabPreferences(preferences: Preferences): TabPreferences {
         val json = preferences[tabPreferencesKey]
         val savedPrefs = if (json != null) {

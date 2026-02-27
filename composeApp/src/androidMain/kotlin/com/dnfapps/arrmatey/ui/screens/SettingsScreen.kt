@@ -1,5 +1,7 @@
 package com.dnfapps.arrmatey.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -97,6 +99,10 @@ fun SettingsScreen(
     var showLibrariesSheet by remember { mutableStateOf(false) }
 
     var confirmShareLastLog by remember { mutableStateOf<String?>(null) }
+
+    BackHandler {
+        navigationManager.openDrawer()
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
