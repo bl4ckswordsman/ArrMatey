@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4405C4E52F21671700F7FEC8 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = 4405C4E42F21671700F7FEC8 /* Flow */; };
+		44E4C29C2F50A6D00024109F /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = 44E4C29B2F50A6D00024109F /* MarkdownView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44E4C29C2F50A6D00024109F /* MarkdownView in Frameworks */,
 				4405C4E52F21671700F7FEC8 /* Flow in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,6 +131,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4405C4E32F21671700F7FEC8 /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */,
+				44E4C29A2F50A6D00024109F /* XCRemoteSwiftPackageReference "MarkdownView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D5D342071E63D7F728C5AA6C /* Products */;
@@ -340,7 +343,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 6E72XH5S4A;
 				ENABLE_PREVIEWS = YES;
@@ -355,7 +358,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3.3;
+				MARKETING_VERSION = 0.0.4;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -369,7 +372,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = ThemePrimary;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 6E72XH5S4A;
 				ENABLE_PREVIEWS = YES;
@@ -384,7 +387,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3.3;
+				MARKETING_VERSION = 0.0.4;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -423,6 +426,14 @@
 				minimumVersion = 3.1.1;
 			};
 		};
+		44E4C29A2F50A6D00024109F /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LiYanan2004/MarkdownView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -430,6 +441,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4405C4E32F21671700F7FEC8 /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */;
 			productName = Flow;
+		};
+		44E4C29B2F50A6D00024109F /* MarkdownView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 44E4C29A2F50A6D00024109F /* XCRemoteSwiftPackageReference "MarkdownView" */;
+			productName = MarkdownView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
