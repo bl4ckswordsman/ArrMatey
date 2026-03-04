@@ -75,6 +75,22 @@ struct SettingsScreen: View {
             }
             
             Section {
+                NavigationLink(value: SettingsRoute.downloadClients) {
+                    HStack(spacing: 24) {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .foregroundColor(.themePrimary)
+                            .frame(width: 32, height: 32)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(MR.strings().download_clients.localized())
+                                .font(.system(size: 18, weight: .medium))
+                        }
+                    }
+                }
+            } header: {
+                Text(MR.strings().download_clients.localized())
+            }
+
+            Section {
                 NavigationLink(value: SettingsRoute.navigationConfig) {
                     HStack(spacing: 24) {
                         Image(systemName: "location.north.fill")
