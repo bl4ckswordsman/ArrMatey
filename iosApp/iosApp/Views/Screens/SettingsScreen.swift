@@ -38,8 +38,8 @@ struct SettingsScreen: View {
             Section {
                 ForEach(instances, id: \.self) { instance in
                     NavigationLink(value: route(for: instance)) {
-                        HStack(spacing: 24){
-                            SVGImageView(filename: instance.type.iconKey)
+                        HStack(spacing: 24) {
+                            instance.type.icon.toImage(renderingMode: .original)
                                 .frame(width: 32, height: 32)
                             VStack(alignment: .leading, spacing: 1) {
                                 HStack(alignment: .center, spacing: 12) {
@@ -103,9 +103,18 @@ struct SettingsScreen: View {
                         }
                     }
                 }
+                Toggle(isOn: Binding(
+                    get: { viewModel.useServiceNavLogos },
+                    set: { _ in viewModel.toggleUseServiceNavLogos() }
+                )) {
+                    Text(MR.strings().service_icons_title.localized())
+                }
             }
             
             AboutCard(
+                onFeatureRequestClick: { if let url = URL(string: MR.strings().feature_request_link.localized()) {
+                    openURL(url)
+                } },
                 onBugReportClick: {
                     if crashManager.getLastCrashLog() != nil {
                         showShareLogAlert = true

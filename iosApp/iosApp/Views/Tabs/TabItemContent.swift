@@ -26,5 +26,9 @@ struct TabItemContent: View {
             }
         }
         .navigationTitle(LocalizedStringKey(tabItem.resource.localized()))
+        // Add navigationDestination for SettingsRoute when in main tabs
+        .navigationDestination(for: SettingsRoute.self) { route in
+            SettingsRouteView(route: route)
+        }
     }
 }

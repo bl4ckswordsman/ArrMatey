@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.dnfapps.arrmatey.arr.api.client.LoggerLevel
@@ -11,6 +12,7 @@ import com.dnfapps.arrmatey.arr.state.CalendarFilterState
 import com.dnfapps.arrmatey.arr.state.CalendarViewMode
 import com.dnfapps.arrmatey.arr.state.ContentFilter
 import com.dnfapps.arrmatey.compose.TabItem
+import com.dnfapps.arrmatey.features.ReleaseNotes
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +43,10 @@ class PreferencesStore(
     private val httpLogLevelKey = stringPreferencesKey("httpLogLevel")
     private val useDynamicThemeKey = booleanPreferencesKey("useDynamicTheme")
     private val useClearLogoKey = booleanPreferencesKey("useClearLogo")
+    private val useServiceNavLogosKey = booleanPreferencesKey("useServiceNavLogos")
     private val tabPreferencesKey = stringPreferencesKey("tabPreferences")
+    private val lastReleaseNotesKey = intPreferencesKey("lastReleaseNotes")
+    private val isFirstLaunchKey = booleanPreferencesKey("isFirstLaunch")
 
     private fun infoCardKey(type: InstanceType): Preferences.Key<Boolean> = when (type) {
         InstanceType.Sonarr -> sonarrInfoCardKey
@@ -223,6 +228,12 @@ class PreferencesStore(
         }
     }
 
+    fun updateTabPreferences(tabPreferences: TabPreferences) {
+        scope.launch {
+            saveTabPreferences(tabPreferences)
+        }
+    }
+
     private fun extractTabPreferences(preferences: Preferences): TabPreferences {
         val json = preferences[tabPreferencesKey]
         val savedPrefs = if (json != null) {
@@ -243,6 +254,55 @@ class PreferencesStore(
             savedPrefs.copy(hiddenTabs = savedPrefs.hiddenTabs + newTabs)
         } else {
             savedPrefs
+        }
+    }
+
+    val isFirstLaunch: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[isFirstLaunchKey] ?: true
+        }
+
+    val shouldShowReleaseNotes: Flow<Boolean> = dataStore.data
+        .combine(isFirstLaunch) { preferences, isFirst ->
+            if (isFirst) {
+                false
+            } else {
+                val lastCode = preferences[lastReleaseNotesKey] ?: -1
+                lastCode < ReleaseNotes.latestUpdate.buildCode
+            }
+        }
+
+    fun markReleaseNotesAsSeen() {
+        scope.launch {
+            dataStore.edit { preferences ->
+                preferences[lastReleaseNotesKey] = ReleaseNotes.latestUpdate.buildCode
+            }
+        }
+    }
+
+    fun markFirstLaunchComplete() {
+        scope.launch {
+            dataStore.edit { preferences ->
+                val current = preferences[isFirstLaunchKey] ?: true
+                if (current) {
+                    markReleaseNotesAsSeen()
+                }
+                preferences[isFirstLaunchKey] = false
+            }
+        }
+    }
+
+    val useServiceNavLogos: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[useServiceNavLogosKey] ?: false
+        }
+
+    fun toggleUseServiceNavLogos() {
+        scope.launch {
+            dataStore.edit { preferences ->
+                val current = preferences[useServiceNavLogosKey] ?: false
+                preferences[useServiceNavLogosKey] = !current
+            }
         }
     }
 
