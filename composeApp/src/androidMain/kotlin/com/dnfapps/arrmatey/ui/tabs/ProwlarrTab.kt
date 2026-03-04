@@ -23,8 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrIndexersViewModel
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrSearchViewModel
+import com.dnfapps.arrmatey.shared.MR
 import com.dnfapps.arrmatey.ui.screens.ProwlarrIndexersContent
 import com.dnfapps.arrmatey.ui.screens.ProwlarrSearchContent
+import com.dnfapps.arrmatey.utils.mokoString
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,17 +36,17 @@ fun ProwlarrTab(
     searchViewModel: ProwlarrSearchViewModel = koinInject()
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Indexers", "Search")
+    val tabs = listOf(mokoString(MR.strings.indexers), mokoString(MR.strings.search))
 
     Scaffold(
         topBar = {
             Column {
                 TopAppBar(
-                    title = { Text("Prowlarr") },
+                    title = { Text(mokoString(MR.strings.prowlarr)) },
                     actions = {
                         if (selectedTabIndex == 0) {
                             IconButton(onClick = { indexersViewModel.refresh() }) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                                Icon(Icons.Default.Refresh, contentDescription = mokoString(MR.strings.refresh))
                             }
                         }
                     }

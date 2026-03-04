@@ -2,6 +2,8 @@
 //  ProwlarrSearchView.swift
 //  iosApp
 //
+//  Created by Bryan Moon on 2026-03-04.
+//
 
 import SwiftUI
 import Shared
@@ -158,7 +160,7 @@ struct ProwlarrSearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("No results found")
+            Text(MR.strings().no_results_found.localized())
                 .font(.system(size: 17))
                 .foregroundStyle(.secondary)
         }

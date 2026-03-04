@@ -2,6 +2,8 @@
 //  ProwlarrIndexersView.swift
 //  iosApp
 //
+//  Created by Bryan Moon on 2026-03-04.
+//
 
 import SwiftUI
 import Shared
@@ -135,7 +137,7 @@ struct IndexerRow: View {
                     HStack(spacing: 2) {
                         Image(systemName: "magnifyingglass")
                             .font(.caption)
-                        Text("Search")
+                        Text(MR.strings().search.localized())
                             .font(.caption)
                     }
                     .foregroundStyle(.secondary)

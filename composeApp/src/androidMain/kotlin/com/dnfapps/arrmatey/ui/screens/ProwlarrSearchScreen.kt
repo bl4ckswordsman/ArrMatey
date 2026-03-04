@@ -66,6 +66,8 @@ fun ProwlarrSearchContent(
     val searchState by viewModel.searchResults.collectAsStateWithLifecycle()
     val grabStatus by viewModel.grabStatus.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val successMsg = mokoString(MR.strings.download_queue_success)
+    val errorMsg = mokoString(MR.strings.error)
     var queryText by remember { mutableStateOf("") }
     var grabTarget by remember { mutableStateOf<ProwlarrSearchResult?>(null) }
 
@@ -73,11 +75,11 @@ fun ProwlarrSearchContent(
     LaunchedEffect(grabStatus) {
         when (grabStatus) {
             is OperationStatus.Success -> {
-                snackbarHostState.showSnackbar("Release sent to download client")
+                snackbarHostState.showSnackbar(successMsg)
                 viewModel.resetGrabStatus()
             }
             is OperationStatus.Error -> {
-                val msg = (grabStatus as OperationStatus.Error).message ?: "Failed to grab release"
+                val msg = (grabStatus as OperationStatus.Error).message ?: errorMsg
                 snackbarHostState.showSnackbar(msg)
                 viewModel.resetGrabStatus()
             }
@@ -165,7 +167,7 @@ fun ProwlarrSearchContent(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "No results found",
+                                text = mokoString(MR.strings.no_results_found),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
