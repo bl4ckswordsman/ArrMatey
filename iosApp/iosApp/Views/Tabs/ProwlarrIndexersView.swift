@@ -19,22 +19,22 @@ struct ProwlarrIndexersView: View {
     
     @ViewBuilder
     private var indexersContent: some View {
-        if viewModel.indexers is IndexersStateLoading {
+        if viewModel.indexers is ProwlarrIndexersStateLoading {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if viewModel.indexers is IndexersStateError {
-            if let error = viewModel.indexers as? IndexersStateError {
+        } else if viewModel.indexers is ProwlarrIndexersStateError {
+            if let error = viewModel.indexers as? ProwlarrIndexersStateError {
                 errorView(message: error.message)
             }
-        } else if viewModel.indexers is IndexersStateSuccess {
-            if let success = viewModel.indexers as? IndexersStateSuccess {
+        } else if viewModel.indexers is ProwlarrIndexersStateSuccess {
+            if let success = viewModel.indexers as? ProwlarrIndexersStateSuccess {
                 if success.items.isEmpty {
                     emptyView
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
                         VStack(spacing: 12) {
-                            ForEach(Array(success.items.enumerated()), id: \.element.id) { _, indexer in
+                            ForEach(Array(success.items.enumerated()), id: \.offset) { _, indexer in
                                 IndexerRow(indexer: indexer)
                             }
                         }
@@ -56,7 +56,7 @@ struct ProwlarrIndexersView: View {
             Image(systemName: "list.bullet.rectangle")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("No indexers configured")
+            Text(MR.strings().no_indexers_configured.localized())
                 .font(.system(size: 17))
                 .foregroundStyle(.secondary)
         }
@@ -66,7 +66,7 @@ struct ProwlarrIndexersView: View {
     private var initialView: some View {
         VStack(spacing: 12) {
             ProgressView()
-            Text("Loading indexers...")
+            Text(MR.strings().loading_indexers.localized())
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -93,14 +93,13 @@ struct IndexerRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(indexer.name ?? indexer.implementationName ?? "Unknown")
+                Text(indexer.name ?? indexer.implementationName ?? MR.strings().unknown.localized())
                     .font(.system(size: 16, weight: .semibold))
                     .lineLimit(1)
                 
                 Spacer()
                 
-                // Protocol badge
-                let protocolText = (indexer.protocol as? String) ?? "Unknown"
+                let protocolText = indexer.protocol?.lowercased() ?? "unknown"
                 Text(protocolText.capitalized)
                     .font(.caption)
                     .padding(.horizontal, 8)
@@ -116,7 +115,9 @@ struct IndexerRow: View {
                     Circle()
                         .fill(indexer.enable ? Color.green : Color.gray)
                         .frame(width: 8, height: 8)
-                    Text(indexer.enable ? "Enabled" : "Disabled")
+                    Text(indexer.enable
+                         ? MR.strings().enabled.localized()
+                         : MR.strings().disabled.localized())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -144,10 +145,10 @@ struct IndexerRow: View {
                 }
             }
             
-            if let message = indexer.message, !message.isEmpty {
-                Text(message)
+            if let msg = indexer.message?.message, !msg.isEmpty {
+                Text(msg)
                     .font(.caption)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(indexer.message?.type?.lowercased() == "warning" ? Color.orange : Color.red)
                     .lineLimit(2)
             }
         }
@@ -157,7 +158,7 @@ struct IndexerRow: View {
     }
     
     private func protocolColor(for proto: String) -> Color {
-        switch proto.lowercased() {
+        switch proto {
         case "torrent": return .blue
         case "usenet": return .green
         default: return .gray

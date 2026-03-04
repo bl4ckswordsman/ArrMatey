@@ -1,6 +1,8 @@
 package com.dnfapps.arrmatey.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +18,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RssFeed
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import com.dnfapps.arrmatey.shared.MR
-import com.dnfapps.arrmatey.utils.mokoString
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,8 +32,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrIndexer
-import com.dnfapps.arrmatey.arr.state.IndexersState
+import com.dnfapps.arrmatey.arr.state.ProwlarrIndexersState
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrIndexersViewModel
+import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.utils.mokoString
 
 @Composable
 fun ProwlarrIndexersContent(
@@ -46,8 +48,8 @@ fun ProwlarrIndexersContent(
         modifier = modifier.padding(horizontal = 12.dp)
     ) {
         when (val state = indexersState) {
-            is IndexersState.Initial,
-            is IndexersState.Loading -> {
+            is ProwlarrIndexersState.Initial,
+            is ProwlarrIndexersState.Loading -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +59,7 @@ fun ProwlarrIndexersContent(
                 }
             }
 
-            is IndexersState.Error -> {
+            is ProwlarrIndexersState.Error -> {
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -72,7 +74,7 @@ fun ProwlarrIndexersContent(
                 }
             }
 
-            is IndexersState.Success -> {
+            is ProwlarrIndexersState.Success -> {
                 if (state.items.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -80,7 +82,7 @@ fun ProwlarrIndexersContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "No indexers configured",
+                            text = mokoString(MR.strings.no_indexers_configured),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -115,7 +117,7 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = indexer.name ?: indexer.implementationName ?: "Unknown",
+                    text = indexer.name ?: indexer.implementationName ?: mokoString(MR.strings.unknown),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -124,7 +126,7 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                val protocol = indexer.protocol?.lowercase() ?: "unknown"
+                val protocol = indexer.protocol?.lowercase() ?: mokoString(MR.strings.unknown).lowercase()
                 val protocolColor = when (protocol) {
                     "torrent" -> MaterialTheme.colorScheme.primary
                     "usenet" -> MaterialTheme.colorScheme.tertiary
@@ -142,19 +144,24 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Spacer(
+                val dotColor = if (indexer.enable)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant
+
+                Box(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
+                        .background(dotColor)
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
+
                 Text(
-                    text = if (indexer.enable) "Enabled" else "Disabled",
+                    text = if (indexer.enable) mokoString(MR.strings.enabled) else mokoString(MR.strings.disabled),
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (indexer.enable)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = dotColor
                 )
 
                 if (indexer.supportsRss) {
@@ -176,12 +183,17 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                 }
             }
 
-            if (!indexer.message.isNullOrBlank()) {
-                Text(
-                    text = indexer.message!!,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
+            indexer.message?.message?.let { msg ->
+                if (msg.isNotBlank()) {
+                    Text(
+                        text = msg,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = when (indexer.message?.type?.lowercase()) {
+                            "warning" -> MaterialTheme.colorScheme.tertiary
+                            else -> MaterialTheme.colorScheme.error
+                        }
+                    )
+                }
             }
         }
     }

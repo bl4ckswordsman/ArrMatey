@@ -238,6 +238,12 @@
     <string name="lidarr_description">Lidarr is a music collection manager for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new tracks from your favorite artists and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.</string>
     <string name="prowlarr_description">Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers.</string>
     <string name="prowlarr">Prowlarr</string>
+    <string name="no_indexers_configured">No indexers configured</string>
+    <string name="loading_indexers">Loading indexers...</string>
+    <string name="prowlarr_search_hint">Search for releases across your indexers</string>
+    <string name="search_releases_placeholder">Search for releases...</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
     <string name="seerr_description">Seerr is a free and open source software application for managing requests for your media library. It integrates with the media server of your choice: Jellyfin, Plex, and Emby. In addition, it integrates with your existing services, such as Sonarr, Radarr.</string>
 
     <!-- Movie Statuses -->

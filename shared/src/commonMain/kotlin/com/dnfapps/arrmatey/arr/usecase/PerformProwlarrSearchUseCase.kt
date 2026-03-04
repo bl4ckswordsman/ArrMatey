@@ -29,7 +29,7 @@ class PerformProwlarrSearchUseCase(
 
         emit(ProwlarrSearchState.Loading)
 
-        when (val result = repository.prowlarrClient.search(
+        when (val result = repository.search(
             query = query,
             categories = categories,
             indexerIds = indexerIds

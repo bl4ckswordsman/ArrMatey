@@ -23,8 +23,8 @@ data class ProwlarrSearchResult(
     val grabs: Int? = null,
     val description: String? = null,
     val categories: List<ProwlarrCategory> = emptyList(),
-    val downloadAllowed: Boolean,
-    val fullSeason: Boolean,
+    val downloadAllowed: Boolean = false,
+    val fullSeason: Boolean = false,
     val releaseGroup: String? = null
 )
 

@@ -50,6 +50,6 @@ class ProwlarrClient(
     suspend fun grab(guid: String, indexerId: Long): NetworkResult<ProwlarrSearchResult> =
         httpClient.safePost("$baseUrl/release") {
             contentType(ContentType.Application.Json)
-            setBody(ProwlarrGrabPayload(guid = guid, indexerId = indexerId))
+            setBody(ProwlarrGrabPayload(guid = guid, indexerId = indexerId.toInt()))
         }
 }

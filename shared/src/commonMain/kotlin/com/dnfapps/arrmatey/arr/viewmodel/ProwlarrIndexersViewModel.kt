@@ -2,7 +2,7 @@ package com.dnfapps.arrmatey.arr.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dnfapps.arrmatey.arr.state.IndexersState
+import com.dnfapps.arrmatey.arr.state.ProwlarrIndexersState
 import com.dnfapps.arrmatey.arr.usecase.GetProwlarrIndexersUseCase
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.instances.usecase.ObserveSelectedInstanceUseCase
@@ -18,8 +18,8 @@ class ProwlarrIndexersViewModel(
     private val observeSelectedInstanceUseCase: ObserveSelectedInstanceUseCase
 ): ViewModel() {
 
-    private val _indexers = MutableStateFlow<IndexersState>(IndexersState.Initial)
-    val indexers: StateFlow<IndexersState> = _indexers.asStateFlow()
+    private val _indexers = MutableStateFlow<ProwlarrIndexersState>(ProwlarrIndexersState.Initial)
+    val indexers: StateFlow<ProwlarrIndexersState> = _indexers.asStateFlow()
 
     private var selectedInstanceId: Long? = null
 

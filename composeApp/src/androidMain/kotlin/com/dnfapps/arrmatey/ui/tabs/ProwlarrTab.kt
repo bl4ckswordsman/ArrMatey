@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrIndexersViewModel
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrSearchViewModel
 import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.ui.components.navigation.NavigationDrawerButton
 import com.dnfapps.arrmatey.ui.screens.ProwlarrIndexersContent
 import com.dnfapps.arrmatey.ui.screens.ProwlarrSearchContent
 import com.dnfapps.arrmatey.utils.mokoString
@@ -43,6 +44,7 @@ fun ProwlarrTab(
             Column {
                 TopAppBar(
                     title = { Text(mokoString(MR.strings.prowlarr)) },
+                    navigationIcon = { NavigationDrawerButton() },
                     actions = {
                         if (selectedTabIndex == 0) {
                             IconButton(onClick = { indexersViewModel.refresh() }) {

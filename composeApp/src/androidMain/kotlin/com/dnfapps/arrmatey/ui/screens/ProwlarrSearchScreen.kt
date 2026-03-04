@@ -70,17 +70,21 @@ fun ProwlarrSearchContent(
     val errorMsg = mokoString(MR.strings.error)
     var queryText by remember { mutableStateOf("") }
     var grabTarget by remember { mutableStateOf<ProwlarrSearchResult?>(null) }
+    // Track which guid is being grabbed so the per-card spinner works
+    // even after the dialog is dismissed
+    var grabbingGuid by remember { mutableStateOf<String?>(null) }
 
-    // Show snackbar on grab result then reset
     LaunchedEffect(grabStatus) {
         when (grabStatus) {
             is OperationStatus.Success -> {
                 snackbarHostState.showSnackbar(successMsg)
+                grabbingGuid = null
                 viewModel.resetGrabStatus()
             }
             is OperationStatus.Error -> {
                 val msg = (grabStatus as OperationStatus.Error).message ?: errorMsg
                 snackbarHostState.showSnackbar(msg)
+                grabbingGuid = null
                 viewModel.resetGrabStatus()
             }
             else -> Unit
@@ -99,7 +103,7 @@ fun ProwlarrSearchContent(
                 value = queryText,
                 onValueChange = { queryText = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search for releases...") },
+                placeholder = { Text(mokoString(MR.strings.search_releases_placeholder)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (queryText.isNotEmpty()) {
@@ -107,7 +111,7 @@ fun ProwlarrSearchContent(
                             queryText = ""
                             viewModel.clearSearch()
                         }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(Icons.Default.Clear, contentDescription = null)
                         }
                     }
                 },
@@ -130,7 +134,7 @@ fun ProwlarrSearchContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Search for releases across your indexers",
+                            text = mokoString(MR.strings.prowlarr_search_hint),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -184,7 +188,7 @@ fun ProwlarrSearchContent(
                                 SearchResultCard(
                                     result = result,
                                     isGrabbing = grabStatus is OperationStatus.InProgress &&
-                                            grabTarget?.guid == result.guid,
+                                            grabbingGuid == result.guid,
                                     onGrab = { grabTarget = result }
                                 )
                             }
@@ -201,30 +205,26 @@ fun ProwlarrSearchContent(
         )
     }
 
-    // Grab confirmation dialog
     grabTarget?.let { result ->
         AlertDialog(
             onDismissRequest = { if (grabStatus !is OperationStatus.InProgress) grabTarget = null },
             title = { Text(mokoString(MR.strings.grab_release_title)) },
             text = {
                 Text(
-                    text = stringResource(MR.strings.confirm_grab_release, result.title ?: "this release"),
+                    text = stringResource(MR.strings.confirm_grab_release, result.title ?: mokoString(MR.strings.unknown)),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
+                        grabbingGuid = result.guid
                         viewModel.grabRelease(result)
                         grabTarget = null
                     },
                     enabled = grabStatus !is OperationStatus.InProgress
                 ) {
-                    if (grabStatus is OperationStatus.InProgress) {
-                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                    } else {
-                        Text(mokoString(MR.strings.grab))
-                    }
+                    Text(mokoString(MR.strings.grab))
                 }
             },
             dismissButton = {
@@ -257,7 +257,7 @@ private fun SearchResultCard(
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = result.title ?: "Unknown",
+                    text = result.title ?: mokoString(MR.strings.unknown),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -280,13 +280,13 @@ private fun SearchResultCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = result.indexer ?: "Unknown indexer",
+                    text = result.indexer ?: mokoString(MR.strings.unknown),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
-                    text = result.protocol?.name ?: "Unknown",
+                    text = result.protocol?.name?.replaceFirstChar { it.uppercase() } ?: mokoString(MR.strings.unknown),
                     style = MaterialTheme.typography.labelSmall,
                     color = when (result.protocol) {
                         ReleaseProtocol.Torrent -> MaterialTheme.colorScheme.primary

@@ -12,7 +12,7 @@ import SwiftUI
 class ProwlarrIndexersViewModelS: ObservableObject {
     private let viewModel: ProwlarrIndexersViewModel
     
-    @Published private(set) var indexers: IndexersState = IndexersStateInitial()
+    @Published private(set) var indexers: ProwlarrIndexersState = ProwlarrIndexersStateInitial()
     
     init() {
         self.viewModel = KoinBridge.shared.getProwlarrIndexersViewModel()

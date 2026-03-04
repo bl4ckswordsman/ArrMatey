@@ -12,13 +12,14 @@ struct ProwlarrSearchView: View {
     @ObservedObject private var viewModel = ProwlarrSearchViewModelS()
     @State private var queryText = ""
     @State private var grabTarget: ProwlarrSearchResult? = nil
+    @State private var grabbingGuid: String? = nil
     @State private var toastMessage: String? = nil
     
     var body: some View {
         VStack(spacing: 0) {
             // Search bar
             HStack(spacing: 8) {
-                TextField("Search for releases...", text: $queryText)
+                TextField(MR.strings().search_releases_placeholder.localized(), text: $queryText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .submitLabel(.search)
                     .onSubmit {
@@ -51,9 +52,8 @@ struct ProwlarrSearchView: View {
             
             searchContent
         }
-        // Grab confirmation dialog
         .confirmationDialog(
-            "Grab Release",
+            MR.strings().grab_release_title.localized(),
             isPresented: Binding(
                 get: { grabTarget != nil },
                 set: { if !$0 { grabTarget = nil } }
@@ -61,30 +61,32 @@ struct ProwlarrSearchView: View {
             titleVisibility: .visible
         ) {
             if let result = grabTarget {
-                Button("Grab \(result.title ?? "Release")") {
+                Button(MR.strings().grab.localized()) {
+                    grabbingGuid = result.guid
                     viewModel.grabRelease(result)
                     grabTarget = nil
                 }
-                Button("Cancel", role: .cancel) {
+                Button(MR.strings().cancel.localized(), role: .cancel) {
                     grabTarget = nil
                 }
             }
         } message: {
             if let result = grabTarget {
-                Text("Send \"\(result.title ?? "this release")\" to your download client?")
+                Text("Send \"\(result.title ?? MR.strings().unknown.localized())\" to your download client?")
             }
         }
-        // Observe grab status for toast
-        .onChange(of: viewModel.grabStatus is OperationStatusSuccess) { isSuccess in
+        .onChange(of: viewModel.grabStatus is OperationStatusSuccess) { _, isSuccess in
             if isSuccess {
-                toastMessage = "Release sent to download client"
+                toastMessage = MR.strings().download_queue_success.localized()
+                grabbingGuid = nil
                 viewModel.resetGrabStatus()
             }
         }
-        .onChange(of: viewModel.grabStatus is OperationStatusError) { isError in
+        .onChange(of: viewModel.grabStatus is OperationStatusError) { _, isError in
             if isError {
                 let error = viewModel.grabStatus as? OperationStatusError
-                toastMessage = error?.message ?? "Failed to grab release"
+                toastMessage = error?.message ?? MR.strings().error.localized()
+                grabbingGuid = nil
                 viewModel.resetGrabStatus()
             }
         }
@@ -122,10 +124,11 @@ struct ProwlarrSearchView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 12) {
-                            ForEach(Array(success.items.enumerated()), id: \.element.guid) { _, result in
+                            // Use \.offset as key — guid is nullable and can't be used directly
+                            ForEach(Array(success.items.enumerated()), id: \.offset) { _, result in
                                 SearchResultRow(
                                     result: result,
-                                    isGrabbing: viewModel.grabStatus is OperationStatusInProgress,
+                                    isGrabbing: grabbingGuid != nil && grabbingGuid == result.guid,
                                     onGrab: { grabTarget = result }
                                 )
                             }
@@ -146,7 +149,7 @@ struct ProwlarrSearchView: View {
             Image(systemName: "magnifyingglass.circle")
                 .font(.system(size: 64))
                 .foregroundStyle(.secondary)
-            Text("Search for releases across your indexers")
+            Text(MR.strings().prowlarr_search_hint.localized())
                 .font(.system(size: 17))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -188,9 +191,8 @@ struct SearchResultRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Title row with grab button
             HStack(alignment: .top) {
-                Text(result.title ?? "Unknown")
+                Text(result.title ?? MR.strings().unknown.localized())
                     .font(.system(size: 15, weight: .semibold))
                     .lineLimit(2)
                 
@@ -208,9 +210,8 @@ struct SearchResultRow: View {
                 .disabled(isGrabbing)
             }
             
-            // Meta row
             HStack(spacing: 8) {
-                Text(result.indexer ?? "Unknown")
+                Text(result.indexer ?? MR.strings().unknown.localized())
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
@@ -218,8 +219,7 @@ struct SearchResultRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                let protoName = result.protocol != nil ? String(describing: result.protocol!) : "Unknown"
-                Text(protoName)
+                Text(protocolDisplayName(for: result.protocol))
                     .font(.caption)
                     .foregroundStyle(protocolColor(for: result.protocol))
                 
@@ -240,7 +240,6 @@ struct SearchResultRow: View {
                     .foregroundStyle(.secondary)
             }
             
-            // Seeders/leechers for torrents
             if result.protocol == ReleaseProtocol.torrent {
                 HStack(spacing: 12) {
                     HStack(spacing: 2) {
@@ -263,10 +262,9 @@ struct SearchResultRow: View {
                 }
             }
             
-            // Categories
             if !result.categories.isEmpty {
-                FlowLayout(spacing: 4) {
-                    ForEach(Array(result.categories.prefix(3).enumerated()), id: \.element.id) { _, category in
+                WrappingHStack(spacing: 4) {
+                    ForEach(Array(result.categories.prefix(3).enumerated()), id: \.offset) { _, category in
                         Text(category.name ?? "Category \(category.id)")
                             .font(.caption2)
                             .padding(.horizontal, 6)
@@ -282,11 +280,20 @@ struct SearchResultRow: View {
         .cornerRadius(8)
     }
     
+    private func protocolDisplayName(for proto: ReleaseProtocol?) -> String {
+        guard let proto = proto else { return MR.strings().unknown.localized() }
+        switch proto {
+        case ReleaseProtocol.torrent: return "Torrent"
+        case ReleaseProtocol.usenet: return "Usenet"
+        default: return MR.strings().unknown.localized()
+        }
+    }
+    
     private func protocolColor(for proto: ReleaseProtocol?) -> Color {
         guard let proto = proto else { return .gray }
         switch proto {
-        case .torrent: return .blue
-        case .usenet: return .green
+        case ReleaseProtocol.torrent: return .blue
+        case ReleaseProtocol.usenet: return .green
         default: return .gray
         }
     }
@@ -308,8 +315,8 @@ struct ToastView: View {
     }
 }
 
-// Simple flow layout for categories
-struct FlowLayout: Layout {
+// Wrapping horizontal stack for category chips
+struct WrappingHStack: Layout {
     var spacing: CGFloat = 4
     
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
