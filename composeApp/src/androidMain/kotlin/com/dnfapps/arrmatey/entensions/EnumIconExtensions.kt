@@ -3,6 +3,7 @@ package com.dnfapps.arrmatey.entensions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowCircleDown
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -40,6 +41,7 @@ val TabItem.androidIcon: ImageVector
         TabItem.MOVIES -> Icons.Default.Movie
         TabItem.MUSIC -> Icons.Default.MusicNote
         TabItem.ACTIVITY -> Icons.Default.Download
+        TabItem.DOWNLOADS -> Icons.Default.CloudDownload
         TabItem.CALENDAR -> Icons.Default.CalendarMonth
         TabItem.REQUESTS -> Icons.Default.Inbox
         TabItem.SETTINGS -> Icons.Default.Settings
