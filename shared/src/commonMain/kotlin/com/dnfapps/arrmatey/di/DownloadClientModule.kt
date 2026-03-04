@@ -5,6 +5,7 @@ import com.dnfapps.arrmatey.downloadclient.repository.DownloadClientRepository
 import com.dnfapps.arrmatey.downloadclient.usecase.CreateDownloadClientUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.DeleteDownloadClientUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.DeleteDownloadUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ObserveDownloadClientsUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.ObserveDownloadQueueUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.PauseDownloadUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.ResumeDownloadUseCase
@@ -20,6 +21,7 @@ val downloadClientModule = module {
     single { DownloadClientRepository(get()) }
     single { DownloadClientManager(get(), get()) }
 
+    factory { ObserveDownloadClientsUseCase(get()) }
     factory { ObserveDownloadQueueUseCase(get()) }
     factory { PauseDownloadUseCase(get()) }
     factory { ResumeDownloadUseCase(get()) }

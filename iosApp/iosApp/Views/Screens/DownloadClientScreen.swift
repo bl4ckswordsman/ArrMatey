@@ -65,8 +65,11 @@ private struct DownloadClientRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 16) {
-                SVGImageView(filename: client.type.iconKey)
-                    .frame(width: 32, height: 32)
+                Image(systemName: "internaldrive")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 28, height: 28)
+                    .foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(client.label)
                         .font(.system(size: 17, weight: .medium))

@@ -3,10 +3,10 @@ package com.dnfapps.arrmatey.downloadclient.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dnfapps.arrmatey.downloadclient.model.DownloadClient
-import com.dnfapps.arrmatey.downloadclient.repository.DownloadClientRepository
 import com.dnfapps.arrmatey.downloadclient.state.DownloadClientConnectionState
 import com.dnfapps.arrmatey.downloadclient.state.DownloadClientMutationState
 import com.dnfapps.arrmatey.downloadclient.usecase.DeleteDownloadClientUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ObserveDownloadClientsUseCase
 import com.dnfapps.arrmatey.downloadclient.usecase.TestDownloadClientConnectionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,12 +16,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DownloadClientSettingsViewModel(
-    downloadClientRepository: DownloadClientRepository,
+    observeDownloadClientsUseCase: ObserveDownloadClientsUseCase,
     private val testDownloadClientConnectionUseCase: TestDownloadClientConnectionUseCase,
     private val deleteDownloadClientUseCase: DeleteDownloadClientUseCase
 ): ViewModel() {
 
-    val downloadClients = downloadClientRepository.observeAllDownloadClients()
+    val downloadClients = observeDownloadClientsUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
