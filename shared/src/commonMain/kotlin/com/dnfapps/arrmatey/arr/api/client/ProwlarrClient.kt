@@ -1,12 +1,17 @@
 package com.dnfapps.arrmatey.arr.api.client
 
+import com.dnfapps.arrmatey.arr.api.model.ProwlarrGrabPayload
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrIndexer
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrSearchResult
 import com.dnfapps.arrmatey.client.NetworkResult
 import com.dnfapps.arrmatey.client.safeGet
+import com.dnfapps.arrmatey.client.safePost
 import com.dnfapps.arrmatey.instances.model.Instance
 import io.ktor.client.HttpClient
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import org.koin.core.component.KoinComponent
 
 class ProwlarrClient(
@@ -40,5 +45,11 @@ class ProwlarrClient(
                     parameters.append("indexerIds", indexerIds.joinToString(","))
                 }
             }
+        }
+
+    suspend fun grab(guid: String, indexerId: Long): NetworkResult<ProwlarrSearchResult> =
+        httpClient.safePost("$baseUrl/release") {
+            contentType(ContentType.Application.Json)
+            setBody(ProwlarrGrabPayload(guid = guid, indexerId = indexerId))
         }
 }

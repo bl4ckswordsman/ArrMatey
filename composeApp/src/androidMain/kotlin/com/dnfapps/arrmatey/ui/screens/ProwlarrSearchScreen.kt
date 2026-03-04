@@ -1,6 +1,7 @@
 package com.dnfapps.arrmatey.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,10 +29,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,9 +51,11 @@ import com.dnfapps.arrmatey.arr.api.model.ProwlarrSearchResult
 import com.dnfapps.arrmatey.arr.api.model.ReleaseProtocol
 import com.dnfapps.arrmatey.arr.state.ProwlarrSearchState
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrSearchViewModel
+import com.dnfapps.arrmatey.client.OperationStatus
 import com.dnfapps.arrmatey.compose.utils.bytesAsFileSizeString
 import com.dnfapps.arrmatey.shared.MR
 import com.dnfapps.arrmatey.utils.mokoString
+import dev.icerock.moko.resources.compose.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -56,136 +64,172 @@ fun ProwlarrSearchContent(
     viewModel: ProwlarrSearchViewModel
 ) {
     val searchState by viewModel.searchResults.collectAsStateWithLifecycle()
+    val grabStatus by viewModel.grabStatus.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     var queryText by remember { mutableStateOf("") }
     var grabTarget by remember { mutableStateOf<ProwlarrSearchResult?>(null) }
 
-    Column(
-        modifier = modifier.padding(horizontal = 12.dp)
-    ) {
-        Spacer(modifier = Modifier.height(8.dp))
+    // Show snackbar on grab result then reset
+    LaunchedEffect(grabStatus) {
+        when (grabStatus) {
+            is OperationStatus.Success -> {
+                snackbarHostState.showSnackbar("Release sent to download client")
+                viewModel.resetGrabStatus()
+            }
+            is OperationStatus.Error -> {
+                val msg = (grabStatus as OperationStatus.Error).message ?: "Failed to grab release"
+                snackbarHostState.showSnackbar(msg)
+                viewModel.resetGrabStatus()
+            }
+            else -> Unit
+        }
+    }
 
-        OutlinedTextField(
-            value = queryText,
-            onValueChange = { queryText = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Search for releases...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = {
-                if (queryText.isNotEmpty()) {
-                    IconButton(onClick = {
-                        queryText = ""
-                        viewModel.clearSearch()
-                    }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = queryText,
+                onValueChange = { queryText = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search for releases...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (queryText.isNotEmpty()) {
+                        IconButton(onClick = {
+                            queryText = ""
+                            viewModel.clearSearch()
+                        }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        }
                     }
-                }
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    if (queryText.isNotBlank()) viewModel.performSearch(queryText)
-                }
-            ),
-            singleLine = true
-        )
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        if (queryText.isNotBlank()) viewModel.performSearch(queryText)
+                    }
+                ),
+                singleLine = true
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        when (val state = searchState) {
-            is ProwlarrSearchState.Initial -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Search for releases across your indexers",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            is ProwlarrSearchState.Loading -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is ProwlarrSearchState.Error -> {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = state.message, modifier = Modifier.padding(16.dp))
-                }
-            }
-
-            is ProwlarrSearchState.Success -> {
-                if (state.items.isEmpty()) {
+            when (val state = searchState) {
+                is ProwlarrSearchState.Initial -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "No results found",
+                            text = "Search for releases across your indexers",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxSize()
+                }
+
+                is ProwlarrSearchState.Loading -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        items(
-                            items = state.items,
-                            key = { it.guid ?: it.title ?: it.hashCode() }
-                        ) { result ->
-                            SearchResultCard(
-                                result = result,
-                                onGrab = { grabTarget = result }
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is ProwlarrSearchState.Error -> {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = state.message, modifier = Modifier.padding(16.dp))
+                    }
+                }
+
+                is ProwlarrSearchState.Success -> {
+                    if (state.items.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "No results found",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        item { Spacer(modifier = Modifier.height(4.dp)) }
+                    } else {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(
+                                items = state.items,
+                                key = { it.guid ?: it.title ?: it.hashCode() }
+                            ) { result ->
+                                SearchResultCard(
+                                    result = result,
+                                    isGrabbing = grabStatus is OperationStatus.InProgress &&
+                                            grabTarget?.guid == result.guid,
+                                    onGrab = { grabTarget = result }
+                                )
+                            }
+                            item { Spacer(modifier = Modifier.height(4.dp)) }
+                        }
                     }
                 }
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
+    // Grab confirmation dialog
     grabTarget?.let { result ->
         AlertDialog(
-            onDismissRequest = { grabTarget = null },
+            onDismissRequest = { if (grabStatus !is OperationStatus.InProgress) grabTarget = null },
             title = { Text(mokoString(MR.strings.grab_release_title)) },
             text = {
-                Column {
-                    Text(result.title ?: "Unknown")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        mokoString(MR.strings.grab_release_message),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(
+                    text = stringResource(MR.strings.confirm_grab_release, result.title ?: "this release"),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    // TODO: hook up grab API call
-                    grabTarget = null
-                }) {
-                    Text(mokoString(MR.strings.grab))
+                TextButton(
+                    onClick = {
+                        viewModel.grabRelease(result)
+                        grabTarget = null
+                    },
+                    enabled = grabStatus !is OperationStatus.InProgress
+                ) {
+                    if (grabStatus is OperationStatus.InProgress) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text(mokoString(MR.strings.grab))
+                    }
                 }
             },
             dismissButton = {
-                TextButton(onClick = { grabTarget = null }) {
+                TextButton(
+                    onClick = { grabTarget = null },
+                    enabled = grabStatus !is OperationStatus.InProgress
+                ) {
                     Text(mokoString(MR.strings.cancel))
                 }
             }
@@ -197,6 +241,7 @@ fun ProwlarrSearchContent(
 @Composable
 private fun SearchResultCard(
     result: ProwlarrSearchResult,
+    isGrabbing: Boolean,
     onGrab: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -216,11 +261,15 @@ private fun SearchResultCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                IconButton(onClick = onGrab) {
-                    Icon(
-                        imageVector = Icons.Default.Download,
-                        contentDescription = mokoString(MR.strings.grab)
-                    )
+                IconButton(onClick = onGrab, enabled = !isGrabbing) {
+                    if (isGrabbing) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = mokoString(MR.strings.grab)
+                        )
+                    }
                 }
             }
 

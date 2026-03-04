@@ -9,8 +9,8 @@ import Shared
 struct ProwlarrSearchView: View {
     @ObservedObject private var viewModel = ProwlarrSearchViewModelS()
     @State private var queryText = ""
-    @State private var showGrabConfirm = false
     @State private var grabTarget: ProwlarrSearchResult? = nil
+    @State private var toastMessage: String? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -49,14 +49,55 @@ struct ProwlarrSearchView: View {
             
             searchContent
         }
-        .alert("Grab Release?", isPresented: $showGrabConfirm, presenting: grabTarget) { result in
-            Button("Grab") {
-                // TODO: Implement grab action
+        // Grab confirmation dialog
+        .confirmationDialog(
+            "Grab Release",
+            isPresented: Binding(
+                get: { grabTarget != nil },
+                set: { if !$0 { grabTarget = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            if let result = grabTarget {
+                Button("Grab \(result.title ?? "Release")") {
+                    viewModel.grabRelease(result)
+                    grabTarget = nil
+                }
+                Button("Cancel", role: .cancel) {
+                    grabTarget = nil
+                }
             }
-            Button("Cancel", role: .cancel) {}
-        } message: { result in
-            Text(result.title ?? "Unknown release")
+        } message: {
+            if let result = grabTarget {
+                Text("Send \"\(result.title ?? "this release")\" to your download client?")
+            }
         }
+        // Observe grab status for toast
+        .onChange(of: viewModel.grabStatus is OperationStatusSuccess) { isSuccess in
+            if isSuccess {
+                toastMessage = "Release sent to download client"
+                viewModel.resetGrabStatus()
+            }
+        }
+        .onChange(of: viewModel.grabStatus is OperationStatusError) { isError in
+            if isError {
+                let error = viewModel.grabStatus as? OperationStatusError
+                toastMessage = error?.message ?? "Failed to grab release"
+                viewModel.resetGrabStatus()
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let message = toastMessage {
+                ToastView(message: message)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                            withAnimation { toastMessage = nil }
+                        }
+                    }
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: toastMessage != nil)
     }
     
     @ViewBuilder
@@ -82,10 +123,8 @@ struct ProwlarrSearchView: View {
                             ForEach(Array(success.items.enumerated()), id: \.element.guid) { _, result in
                                 SearchResultRow(
                                     result: result,
-                                    onGrab: {
-                                        grabTarget = result
-                                        showGrabConfirm = true
-                                    }
+                                    isGrabbing: viewModel.grabStatus is OperationStatusInProgress,
+                                    onGrab: { grabTarget = result }
                                 )
                             }
                         }
@@ -142,6 +181,7 @@ struct ProwlarrSearchView: View {
 
 struct SearchResultRow: View {
     let result: ProwlarrSearchResult
+    let isGrabbing: Bool
     let onGrab: () -> Void
     
     var body: some View {
@@ -155,9 +195,15 @@ struct SearchResultRow: View {
                 Spacer()
                 
                 Button(action: onGrab) {
-                    Image(systemName: "arrow.down.circle")
-                        .font(.system(size: 22))
+                    if isGrabbing {
+                        ProgressView()
+                            .frame(width: 22, height: 22)
+                    } else {
+                        Image(systemName: "arrow.down.circle")
+                            .font(.system(size: 22))
+                    }
                 }
+                .disabled(isGrabbing)
             }
             
             // Meta row
@@ -170,7 +216,6 @@ struct SearchResultRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                // Protocol
                 let protoName = result.protocol != nil ? String(describing: result.protocol!) : "Unknown"
                 Text(protoName)
                     .font(.caption)
@@ -180,7 +225,6 @@ struct SearchResultRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                // Size
                 Text(ByteCountFormatter.string(fromByteCount: result.size, countStyle: .binary))
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -189,7 +233,6 @@ struct SearchResultRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                // Age
                 Text("\(result.age)d")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -244,6 +287,22 @@ struct SearchResultRow: View {
         case .usenet: return .green
         default: return .gray
         }
+    }
+}
+
+// Simple toast view
+struct ToastView: View {
+    let message: String
+    
+    var body: some View {
+        Text(message)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Color.black.opacity(0.75))
+            .cornerRadius(20)
+            .padding(.bottom, 24)
     }
 }
 

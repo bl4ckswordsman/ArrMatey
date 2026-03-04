@@ -47,6 +47,7 @@ import com.dnfapps.arrmatey.arr.usecase.DeleteMediaUseCase
 import com.dnfapps.arrmatey.arr.usecase.DeleteQueueItemUseCase
 import com.dnfapps.arrmatey.arr.usecase.DeleteSeasonFilesUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetCalendarUseCase
+import com.dnfapps.arrmatey.arr.usecase.GrabProwlarrReleaseUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetProwlarrIndexersUseCase
 import com.dnfapps.arrmatey.arr.usecase.PerformProwlarrSearchUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetEpisodeHistoryUseCase
@@ -158,6 +159,7 @@ val useCaseModule = module {
     factory { DeleteAlbumFilesUseCase() }
     factory { GetProwlarrIndexersUseCase(get()) }
     factory { PerformProwlarrSearchUseCase(get()) }
+    factory { GrabProwlarrReleaseUseCase(get()) }
     factory { UpdateCalendarFilterPreferenceUseCase(get()) }
     factory { GetSeerrInstanceRepositoryUseCase(get()) }
     factory { GetCurrentSeerrUserUseCase() }
@@ -200,7 +202,7 @@ val viewModelModule = module {
     }
     factory { CalendarViewModel(get(), get(), get(), get()) }
     factory { ProwlarrIndexersViewModel(get(), get()) }
-    factory { ProwlarrSearchViewModel(get(), get()) }
+    factory { ProwlarrSearchViewModel(get(), get(), get()) }
     factory { RequestsViewModel(get(), get(), get()) }
 }
 
