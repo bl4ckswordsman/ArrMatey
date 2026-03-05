@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,11 +33,13 @@ import com.dnfapps.arrmatey.downloadclient.model.DownloadClient
 import com.dnfapps.arrmatey.downloadclient.model.DownloadClientType
 import com.dnfapps.arrmatey.downloadclient.state.DownloadClientMutationState
 import com.dnfapps.arrmatey.downloadclient.viewmodel.DownloadClientSettingsViewModel
+import com.dnfapps.arrmatey.navigation.Navigation
 import com.dnfapps.arrmatey.navigation.NavigationManager
-import com.dnfapps.arrmatey.navigation.SettingsNavigation
+import com.dnfapps.arrmatey.navigation.SettingsScreen
 import com.dnfapps.arrmatey.shared.MR
 import com.dnfapps.arrmatey.ui.components.DropdownPicker
 import com.dnfapps.arrmatey.ui.components.LabelledSwitch
+import com.dnfapps.arrmatey.ui.components.navigation.BackButton
 import com.dnfapps.arrmatey.utils.mokoString
 import org.koin.compose.koinInject
 
@@ -51,7 +49,7 @@ fun AddEditDownloadClientScreen(
     clientId: Long? = null,
     viewModel: DownloadClientSettingsViewModel = koinInject(),
     navigationManager: NavigationManager = koinInject(),
-    settingsNav: SettingsNavigation = navigationManager.settings()
+    navigation: Navigation<SettingsScreen> = navigationManager.settings()
 ) {
     val downloadClients by viewModel.downloadClients.collectAsStateWithLifecycle()
     val mutationState by viewModel.mutationState.collectAsStateWithLifecycle()
@@ -79,7 +77,7 @@ fun AddEditDownloadClientScreen(
         when (val state = mutationState) {
             is DownloadClientMutationState.Success -> {
                 viewModel.resetMutationState()
-                settingsNav.popBackStack()
+                navigation.popBackStack()
             }
             is DownloadClientMutationState.Conflict -> {
                 conflictFields = state.fields
@@ -101,12 +99,7 @@ fun AddEditDownloadClientScreen(
             LargeTopAppBar(
                 title = { Text(text = titleText) },
                 navigationIcon = {
-                    IconButton(onClick = { settingsNav.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
+                    BackButton(navigation)
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -127,7 +120,7 @@ fun AddEditDownloadClientScreen(
                 label = { Text(mokoString(MR.strings.client_label)) },
                 isError = conflictFields.contains(DownloadClientConflictField.DownloadClientLabel),
                 supportingText = if (conflictFields.contains(DownloadClientConflictField.DownloadClientLabel)) {
-                    { Text(mokoString(MR.strings.client_label) + " conflict", color = MaterialTheme.colorScheme.error) }
+                    { Text(mokoString(MR.strings.field_conflict, mokoString(MR.strings.client_label)), color = MaterialTheme.colorScheme.error) }
                 } else null,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -148,7 +141,7 @@ fun AddEditDownloadClientScreen(
                 label = { Text(mokoString(MR.strings.client_url)) },
                 isError = conflictFields.contains(DownloadClientConflictField.DownloadClientUrl),
                 supportingText = if (conflictFields.contains(DownloadClientConflictField.DownloadClientUrl)) {
-                    { Text(mokoString(MR.strings.client_url) + " conflict", color = MaterialTheme.colorScheme.error) }
+                    { Text(mokoString(MR.strings.field_conflict, mokoString(MR.strings.client_url)), color = MaterialTheme.colorScheme.error) }
                 } else null,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true

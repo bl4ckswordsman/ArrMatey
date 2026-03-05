@@ -75,7 +75,7 @@ struct AddEditDownloadClientScreen: View {
                 viewModel.resetMutationState()
                 dismiss()
             } else if let conflict = state as? DownloadClientMutationStateConflict {
-                errorMessage = "Conflict on fields"
+                errorMessage = MR.strings().conflict_on_fields.localized()
             } else if let error = state as? DownloadClientMutationStateError {
                 errorMessage = error.message
             } else {

@@ -255,6 +255,8 @@ private fun DownloadClientItem(
                             color = MaterialTheme.colorScheme.error
                         )
                     }
+
+                    else -> {}
                 }
             }
 

@@ -56,7 +56,7 @@ class DownloadClientSettingsViewModel(
                 _mutationState.value = DownloadClientMutationState.Success(downloadClient.id)
             }.onFailure { error ->
                 _mutationState.value = DownloadClientMutationState.Error(
-                    error.message ?: "Failed to delete"
+                    error.message ?: ""
                 )
             }
         }
