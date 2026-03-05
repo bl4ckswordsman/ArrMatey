@@ -17,41 +17,9 @@ struct ProwlarrSearchView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Search bar
-            HStack(spacing: 8) {
-                TextField(MR.strings().search_releases_placeholder.localized(), text: $queryText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .submitLabel(.search)
-                    .onSubmit {
-                        if !queryText.isEmpty {
-                            viewModel.performSearch(queryText)
-                        }
-                    }
-                
-                Button(action: {
-                    if !queryText.isEmpty {
-                        viewModel.performSearch(queryText)
-                    }
-                }) {
-                    Image(systemName: "magnifyingglass")
-                }
-                .disabled(queryText.isEmpty)
-                
-                if !queryText.isEmpty {
-                    Button(action: {
-                        queryText = ""
-                        viewModel.clearSearch()
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            
             searchContent
         }
+        .searchable(text: $queryText, prompt: MR.strings().prowlarr_search_hint.localized())
         .confirmationDialog(
             MR.strings().grab_release_title.localized(),
             isPresented: Binding(

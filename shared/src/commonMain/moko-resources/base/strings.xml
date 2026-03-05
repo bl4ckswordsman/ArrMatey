@@ -196,6 +196,11 @@
     <string name="feature_request">Feature request</string>
     <string name="service_icons_title">Use service icons</string>
     <string name="service_icons_description">Display service logos as navigation icons for supported services</string>
+    <string name="status">Status</string>
+    <string name="name">Name</string>
+    <string name="sync_profile">Sync profile</string>
+    <string name="priority">Priority</string>
+    <string name="privacy">Privacy</string>
 
     <!-- History Event Type -->
     <string name="grabbed">Grabbed</string>
@@ -230,7 +235,6 @@
     <string name="error_timeout_tip">Tip: Enable "%1$s" in instance settings for indexers that need more time.</string>
     <string name="error_network_title">Network Error</string>
     <string name="error_generic_title">Something went wrong</string>
-
 
     <!-- Instances -->
     <string name="sonarr_description">Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.</string>
@@ -360,5 +364,10 @@
     <string name="crash_report_subject">ArrMatey Crash Report</string>
     <string name="share_crash_log">Share Crash Log</string>
     <string name="share_crash_log_message">It looks like the app crashed the last time you were using it. Would you like to share the crash log? You will be able to copy the log to paste into GitHub or you can share to GitHub directly to open an issue.</string>
+
+    <!-- Indexer Errors -->
+    <string name="disabled_until">Disabled until</string>
+    <string name="most_recent_failure">Most recent failure</string>
+    <string name="initial_failure">Initial failure</string>
 
 </resources>

@@ -13,36 +13,57 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RssFeed
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dnfapps.arrmatey.arr.api.model.IndexerMessageType
+import com.dnfapps.arrmatey.arr.api.model.IndexerStatus
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrIndexer
+import com.dnfapps.arrmatey.arr.api.model.ReleaseProtocol
 import com.dnfapps.arrmatey.arr.state.ProwlarrIndexersState
 import com.dnfapps.arrmatey.arr.viewmodel.ProwlarrIndexersViewModel
 import com.dnfapps.arrmatey.shared.MR
+import com.dnfapps.arrmatey.ui.components.ContainerCard
+import com.dnfapps.arrmatey.ui.theme.ArrOrange
+import com.dnfapps.arrmatey.utils.format
 import com.dnfapps.arrmatey.utils.mokoString
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun ProwlarrIndexersContent(
     modifier: Modifier = Modifier,
     viewModel: ProwlarrIndexersViewModel
 ) {
     val indexersState by viewModel.indexers.collectAsStateWithLifecycle()
+    val indexersStatus by viewModel.indexerStatus.collectAsStateWithLifecycle()
+
+    var showIndexerStatus by remember { mutableStateOf<IndexerStatus?>(null) }
 
     Column(
         modifier = modifier.padding(horizontal = 12.dp)
@@ -88,15 +109,75 @@ fun ProwlarrIndexersContent(
                         )
                     }
                 } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    PullToRefreshBox(
+                        isRefreshing = false,
+                        onRefresh = { viewModel.refresh() },
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        item { Spacer(modifier = Modifier.size(4.dp)) }
-                        items(items = state.items, key = { it.id }) { indexer ->
-                            IndexerCard(indexer = indexer)
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            item { Spacer(modifier = Modifier.size(4.dp)) }
+                            items(items = state.items, key = { it.id }) { indexer ->
+                                val indexerStatus =
+                                    indexersStatus.firstOrNull { it.indexerId == indexer.id }
+                                IndexerCard(
+                                    indexer = indexer,
+                                    hasIssues = indexerStatus?.hasFailure ?: false,
+                                    onShowIssues = { showIndexerStatus = indexerStatus }
+                                )
+                            }
+                            item { Spacer(modifier = Modifier.size(4.dp)) }
                         }
-                        item { Spacer(modifier = Modifier.size(4.dp)) }
+                    }
+                }
+            }
+        }
+    }
+
+    showIndexerStatus?.let { indexersStatus ->
+        ModalBottomSheet(
+            onDismissRequest = { showIndexerStatus = null }
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                indexersStatus.disabledTill?.let { disabledTill ->
+                    ContainerCard(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = mokoString(MR.strings.disabled_until),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = disabledTill.format ()
+                        )
+                    }
+                }
+                indexersStatus.mostRecentFailure?.let { mostRecentFailure ->
+                    ContainerCard(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = mokoString(MR.strings.most_recent_failure),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = mostRecentFailure.format ()
+                        )
+                    }
+                }
+                indexersStatus.initialFailure?.let { initialFailure ->
+                    ContainerCard(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = mokoString(MR.strings.initial_failure),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = initialFailure.format()
+                        )
                     }
                 }
             }
@@ -105,8 +186,15 @@ fun ProwlarrIndexersContent(
 }
 
 @Composable
-private fun IndexerCard(indexer: ProwlarrIndexer) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun IndexerCard(
+    indexer: ProwlarrIndexer,
+    hasIssues: Boolean,
+    onShowIssues: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onShowIssues
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -126,14 +214,14 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                val protocol = indexer.protocol?.lowercase() ?: mokoString(MR.strings.unknown).lowercase()
-                val protocolColor = when (protocol) {
-                    "torrent" -> MaterialTheme.colorScheme.primary
-                    "usenet" -> MaterialTheme.colorScheme.tertiary
+                val protocol = indexer.protocol?.name ?: mokoString(MR.strings.unknown).lowercase()
+                val protocolColor = when (indexer.protocol) {
+                    ReleaseProtocol.Torrent -> MaterialTheme.colorScheme.primary
+                    ReleaseProtocol.Usenet -> MaterialTheme.colorScheme.tertiary
                     else -> MaterialTheme.colorScheme.outline
                 }
                 Text(
-                    text = protocol.replaceFirstChar { it.uppercase() },
+                    text = protocol,
                     style = MaterialTheme.typography.labelMedium,
                     color = protocolColor,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -148,15 +236,12 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                     MaterialTheme.colorScheme.primary
                 else
                     MaterialTheme.colorScheme.onSurfaceVariant
-
                 Box(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
                         .background(dotColor)
                 )
-
-                Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
                     text = if (indexer.enable) mokoString(MR.strings.enabled) else mokoString(MR.strings.disabled),
@@ -181,6 +266,15 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
+                Spacer(Modifier.weight(1f))
+                if (hasIssues) {
+                    Icon(
+                        imageVector = Icons.Default.WarningAmber,
+                        contentDescription = null,
+                        tint = ArrOrange,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
 
             indexer.message?.message?.let { msg ->
@@ -188,8 +282,8 @@ private fun IndexerCard(indexer: ProwlarrIndexer) {
                     Text(
                         text = msg,
                         style = MaterialTheme.typography.bodySmall,
-                        color = when (indexer.message?.type?.lowercase()) {
-                            "warning" -> MaterialTheme.colorScheme.tertiary
+                        color = when (indexer.message?.type) {
+                            IndexerMessageType.Warning -> MaterialTheme.colorScheme.tertiary
                             else -> MaterialTheme.colorScheme.error
                         }
                     )

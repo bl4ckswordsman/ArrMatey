@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dnfapps.arrmatey.arr.state.ContentFilter
 import com.dnfapps.arrmatey.compose.TabItem
@@ -59,6 +60,10 @@ val SortBy.androidIcon: ImageVector
         SortBy.NextAiring -> Icons.Default.Schedule
         SortBy.PreviousAiring -> Icons.Default.History
         SortBy.Relevance -> Icons.Default.Star
+        SortBy.Name -> Icons.Default.SortByAlpha
+        SortBy.Priority -> Icons.Default.Star
+        SortBy.Protocol -> Icons.Default.Download
+        SortBy.Privacy -> Icons.Default.Visibility
     }
 
 val SortOrder.androidIcon: ImageVector

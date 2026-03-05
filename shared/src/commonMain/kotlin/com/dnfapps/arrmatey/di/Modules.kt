@@ -51,6 +51,7 @@ import com.dnfapps.arrmatey.arr.usecase.GrabProwlarrReleaseUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetProwlarrIndexersUseCase
 import com.dnfapps.arrmatey.arr.usecase.PerformProwlarrSearchUseCase
 import com.dnfapps.arrmatey.arr.usecase.GetEpisodeHistoryUseCase
+import com.dnfapps.arrmatey.arr.usecase.GetProwlarrIndexersStatusUseCase
 import com.dnfapps.arrmatey.arr.usecase.PerformAutomaticSearchUseCase
 import com.dnfapps.arrmatey.arr.usecase.PerformRefreshUseCase
 import com.dnfapps.arrmatey.arr.usecase.ToggleMonitorUseCase
@@ -67,6 +68,7 @@ import com.dnfapps.arrmatey.datastore.DataStoreFactory
 import com.dnfapps.arrmatey.datastore.InstancePreferenceStoreRepository
 import com.dnfapps.arrmatey.datastore.PreferencesStore
 import com.dnfapps.arrmatey.instances.model.InstanceType
+import com.dnfapps.arrmatey.instances.usecase.GetProwlarrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.instances.usecase.GetSeerrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.instances.usecase.TestInstanceConnectionUseCase
 import com.dnfapps.arrmatey.instances.usecase.UpdateCalendarFilterPreferenceUseCase
@@ -164,6 +166,8 @@ val useCaseModule = module {
     factory { GetSeerrInstanceRepositoryUseCase(get()) }
     factory { GetCurrentSeerrUserUseCase() }
     factory { GetRequestsUseCase() }
+    factory { GetProwlarrIndexersStatusUseCase(get()) }
+    factory { GetProwlarrInstanceRepositoryUseCase(get()) }
 }
 
 val viewModelModule = module {
@@ -201,7 +205,7 @@ val viewModelModule = module {
         ArrInstanceDashboardViewModel(instanceId, get())
     }
     factory { CalendarViewModel(get(), get(), get(), get()) }
-    factory { ProwlarrIndexersViewModel(get(), get()) }
+    factory { ProwlarrIndexersViewModel(get(), get(), get()) }
     factory { ProwlarrSearchViewModel(get(), get(), get()) }
     factory { RequestsViewModel(get(), get(), get()) }
 }

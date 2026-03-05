@@ -25,6 +25,7 @@ struct ProwlarrTab: View {
 
 struct ProwlarrTabContent: View {
     @State private var selectedSegment = 0
+    @ObservedObject private var viewModel = ProwlarrIndexersViewModelS()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,11 +38,25 @@ struct ProwlarrTabContent: View {
             .padding(.vertical, 8)
             
             if selectedSegment == 0 {
-                ProwlarrIndexersView()
+                ProwlarrIndexersView(viewModel: viewModel)
             } else {
                 ProwlarrSearchView()
             }
         }
         .navigationTitle(MR.strings().prowlarr.localized())
+        .toolbar {
+            if selectedSegment == 0 {
+                IndexerSortMenu(
+                    sortBy: Binding(
+                        get: { viewModel.indexerSortState.sortBy },
+                        set: { viewModel.updateSortBy($0) }
+                    ),
+                    sortOrder: Binding(
+                        get: { viewModel.indexerSortState.sortOrder },
+                        set: { viewModel.updateSortOrder($0) }
+                    )
+                )
+            }
+        }
     }
 }

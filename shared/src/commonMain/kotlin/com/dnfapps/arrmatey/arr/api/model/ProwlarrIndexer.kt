@@ -1,6 +1,8 @@
 package com.dnfapps.arrmatey.arr.api.model
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Serializable
 data class ProwlarrIndexer(
@@ -19,7 +21,9 @@ data class ProwlarrIndexer(
     val supportsSearch: Boolean,
     val supportsRedirect: Boolean,
     val appFriendlyName: String? = null,
-    val protocol: String? = null, // torrent, usenet
+    val protocol: ReleaseProtocol? = null,
     val priority: Int,
-    val downloadClientId: Int? = null
+    val downloadClientId: Int? = null,
+    val privacy: IndexerPrivacy? = null,
+    @Contextual val added: Instant? = null
 )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Download
@@ -25,8 +26,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
@@ -57,7 +60,7 @@ import com.dnfapps.arrmatey.shared.MR
 import com.dnfapps.arrmatey.utils.mokoString
 import dev.icerock.moko.resources.compose.stringResource
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProwlarrSearchContent(
     modifier: Modifier = Modifier,
@@ -68,7 +71,6 @@ fun ProwlarrSearchContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val successMsg = mokoString(MR.strings.download_queue_success)
     val errorMsg = mokoString(MR.strings.error)
-    var queryText by remember { mutableStateOf("") }
     var grabTarget by remember { mutableStateOf<ProwlarrSearchResult?>(null) }
     // Track which guid is being grabbed so the per-card spinner works
     // even after the dialog is dismissed
@@ -91,109 +93,61 @@ fun ProwlarrSearchContent(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp)
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val state = searchState) {
+            is ProwlarrSearchState.Initial -> {
+                Text(
+                    text = mokoString(MR.strings.prowlarr_search_hint),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
-            OutlinedTextField(
-                value = queryText,
-                onValueChange = { queryText = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(mokoString(MR.strings.search_releases_placeholder)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (queryText.isNotEmpty()) {
-                        IconButton(onClick = {
-                            queryText = ""
-                            viewModel.clearSearch()
-                        }) {
-                            Icon(Icons.Default.Clear, contentDescription = null)
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        if (queryText.isNotBlank()) viewModel.performSearch(queryText)
-                    }
-                ),
-                singleLine = true
-            )
+            is ProwlarrSearchState.Loading -> {
+                LoadingIndicator(
+                    modifier = Modifier.size(96.dp)
+                )
+            }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            when (val state = searchState) {
-                is ProwlarrSearchState.Initial -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = mokoString(MR.strings.prowlarr_search_hint),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+            is ProwlarrSearchState.Error -> {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = state.message, modifier = Modifier.padding(16.dp))
                 }
+            }
 
-                is ProwlarrSearchState.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+            is ProwlarrSearchState.Success -> {
+                if (state.items.isEmpty()) {
+                    Text(
+                        text = mokoString(MR.strings.no_results_found),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                is ProwlarrSearchState.Error -> {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = state.message, modifier = Modifier.padding(16.dp))
-                    }
-                }
-
-                is ProwlarrSearchState.Success -> {
-                    if (state.items.isEmpty()) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = mokoString(MR.strings.no_results_found),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        items(
+                            items = state.items,
+                            key = { it.guid ?: it.title ?: it.hashCode() }
+                        ) { result ->
+                            SearchResultCard(
+                                result = result,
+                                isGrabbing = grabStatus is OperationStatus.InProgress &&
+                                        grabbingGuid == result.guid,
+                                onGrab = { grabTarget = result }
                             )
                         }
-                    } else {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(
-                                items = state.items,
-                                key = { it.guid ?: it.title ?: it.hashCode() }
-                            ) { result ->
-                                SearchResultCard(
-                                    result = result,
-                                    isGrabbing = grabStatus is OperationStatus.InProgress &&
-                                            grabbingGuid == result.guid,
-                                    onGrab = { grabTarget = result }
-                                )
-                            }
-                            item { Spacer(modifier = Modifier.height(4.dp)) }
-                        }
+                        item { Spacer(modifier = Modifier.height(4.dp)) }
                     }
                 }
             }

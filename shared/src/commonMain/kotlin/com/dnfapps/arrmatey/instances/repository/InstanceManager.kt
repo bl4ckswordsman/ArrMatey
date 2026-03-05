@@ -88,10 +88,16 @@ class InstanceManager(
             }
 
     fun getSelectedSeerrRepository(): Flow<SeerrInstanceRepository?> = flow { emit(null) }
-//        instanceRepository.observeSelectedInstance(InstanceType.Seerr)
+    //        instanceRepository.observeSelectedInstance(InstanceType.Seerr)
 //            .map { instance ->
 //                instance?.let { getSeerrRepository(it.id) }
 //            }
+
+    fun getSelectedProwlarrRepository(): Flow<ProwlarrInstanceRepository?> =
+        instanceRepository.observeSelectedInstance(InstanceType.Prowlarr)
+            .map { instance ->
+                instance?.let { getProwlarrRepository(it.id) }
+            }
 
     fun getAllRepositories(): List<InstanceScopedRepository> {
         return _instanceRepositories.value.values.toList()

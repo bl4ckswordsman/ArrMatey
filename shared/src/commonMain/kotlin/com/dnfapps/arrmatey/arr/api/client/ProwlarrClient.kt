@@ -1,5 +1,6 @@
 package com.dnfapps.arrmatey.arr.api.client
 
+import com.dnfapps.arrmatey.arr.api.model.IndexerStatus
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrGrabPayload
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrIndexer
 import com.dnfapps.arrmatey.arr.api.model.ProwlarrSearchResult
@@ -27,6 +28,9 @@ class ProwlarrClient(
 
     suspend fun getIndexers(): NetworkResult<List<ProwlarrIndexer>> =
         httpClient.safeGet("$baseUrl/indexer")
+
+    suspend fun getIndexerStatus(): NetworkResult<List<IndexerStatus>> =
+        httpClient.safeGet("$baseUrl/indexerStatus")
 
     suspend fun search(
         query: String,

@@ -23,7 +23,13 @@ enum class SortBy(
     PreviousAiring("clock.arrow.trianglehead.counterclockwise.rotate.90", MR.strings.previous_airing),
 
     // Lookup
-    Relevance("star", MR.strings.relevance);
+    Relevance("star", MR.strings.relevance),
+
+    // Prowlarr
+    Name("textformat", MR.strings.name),
+    Priority("star", MR.strings.priority),
+    Protocol("arrow.down.circle", MR.strings.protocol),
+    Privacy("hand.raised", MR.strings.privacy);
 
     companion object {
 
@@ -33,9 +39,11 @@ enum class SortBy(
         private val radarrOps by lazy {
             listOf(Title, Year, Added, Rating, FileSize, Grabbed, DigitalRelease)
         }
-
         private val lidarrOps by lazy {
             listOf(Title, Year, Added, Rating, FileSize)
+        }
+        private val prowlarrOps by lazy {
+            listOf(Name, Added, Protocol, Priority, Privacy)
         }
 
         fun typeEntries(type: InstanceType) =
@@ -43,6 +51,7 @@ enum class SortBy(
                 InstanceType.Sonarr -> sonarrOps
                 InstanceType.Radarr -> radarrOps
                 InstanceType.Lidarr -> lidarrOps
+                InstanceType.Prowlarr -> prowlarrOps
                 else -> emptyList()
             }
 
