@@ -11,6 +11,7 @@
 [![Swift](https://img.shields.io/badge/Language-Swift-orange.svg)](https://swift.org)
 
 <a href="https://www.buymeacoffee.com/owenlejeune" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/owenlejeune)
 
 ## Downloads
 
