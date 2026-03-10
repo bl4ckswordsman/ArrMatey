@@ -18,7 +18,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,9 +41,7 @@ import com.dnfapps.arrmatey.arr.viewmodel.ActivityQueueViewModel
 import com.dnfapps.arrmatey.compose.TabItem
 import com.dnfapps.arrmatey.datastore.PreferencesStore
 import com.dnfapps.arrmatey.datastore.TabPreferences
-import com.dnfapps.arrmatey.entensions.BadgeContent
 import com.dnfapps.arrmatey.entensions.TabItemIconView
-import com.dnfapps.arrmatey.entensions.androidIcon
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.navigation.NavigationManager
 import com.dnfapps.arrmatey.shared.MR
@@ -52,6 +49,7 @@ import com.dnfapps.arrmatey.ui.components.navigation.DoubleBackToExit
 import com.dnfapps.arrmatey.ui.tabs.ActivityTab
 import com.dnfapps.arrmatey.ui.tabs.ArrTab
 import com.dnfapps.arrmatey.ui.tabs.CalendarTab
+import com.dnfapps.arrmatey.ui.tabs.DownloadsTab
 import com.dnfapps.arrmatey.ui.tabs.ProwlarrTab
 import com.dnfapps.arrmatey.ui.tabs.RequestsTab
 import com.dnfapps.arrmatey.ui.tabs.SettingsTabNavHost
@@ -266,6 +264,7 @@ private fun TabItemContent(tab: TabItem) {
         TabItem.MOVIES -> ArrTab(InstanceType.Radarr)
         TabItem.MUSIC -> ArrTab(InstanceType.Lidarr)
         TabItem.ACTIVITY -> ActivityTab()
+        TabItem.DOWNLOADS -> DownloadsTab()
         TabItem.CALENDAR -> CalendarTab()
         TabItem.REQUESTS -> RequestsTab()
         TabItem.PROWLARR -> ProwlarrTab()

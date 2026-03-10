@@ -160,6 +160,9 @@ struct LauncherTabView: View {
             case .calendar:
                 CalendarTab()
                     .environment(\.navigationContext, .launcher)
+            case .downloads:
+                DownloadsTab()
+                    .environment(\.navigationContext, .launcher)
             case .requests:
                 EmptyView()
             case .prowlarr:

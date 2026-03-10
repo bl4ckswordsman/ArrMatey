@@ -3,10 +3,14 @@ package com.dnfapps.arrmatey.entensions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowCircleDown
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Downloading
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Inbox
@@ -42,6 +46,7 @@ val TabItem.androidIcon: ImageVector
         TabItem.MOVIES -> Icons.Default.Movie
         TabItem.MUSIC -> Icons.Default.MusicNote
         TabItem.ACTIVITY -> Icons.Default.Download
+        TabItem.DOWNLOADS -> Icons.Default.CloudDownload
         TabItem.CALENDAR -> Icons.Default.CalendarMonth
         TabItem.REQUESTS -> Icons.Default.Inbox
         TabItem.PROWLARR -> Icons.Default.ManageSearch
@@ -60,6 +65,11 @@ val SortBy.androidIcon: ImageVector
         SortBy.NextAiring -> Icons.Default.Schedule
         SortBy.PreviousAiring -> Icons.Default.History
         SortBy.Relevance -> Icons.Default.Star
+        SortBy.Size -> Hard_drive
+        SortBy.Progress -> Icons.Default.Downloading
+        SortBy.DownloadSpeed -> Icons.Default.FileDownload
+        SortBy.UploadSpeed -> Icons.Default.FileUpload
+        SortBy.Eta -> Icons.Default.Schedule
         SortBy.Name -> Icons.Default.SortByAlpha
         SortBy.Priority -> Icons.Default.Star
         SortBy.Protocol -> Icons.Default.Download

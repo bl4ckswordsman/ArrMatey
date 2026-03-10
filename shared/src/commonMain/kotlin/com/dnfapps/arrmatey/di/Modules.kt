@@ -67,6 +67,25 @@ import com.dnfapps.arrmatey.database.getRoomDatabase
 import com.dnfapps.arrmatey.datastore.DataStoreFactory
 import com.dnfapps.arrmatey.datastore.InstancePreferenceStoreRepository
 import com.dnfapps.arrmatey.datastore.PreferencesStore
+import com.dnfapps.arrmatey.downloadclient.repository.DownloadClientManager
+import com.dnfapps.arrmatey.downloadclient.repository.DownloadClientRepository
+import com.dnfapps.arrmatey.downloadclient.service.DownloadQueueService
+import com.dnfapps.arrmatey.downloadclient.usecase.CreateDownloadClientUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.DeleteDownloadClientUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.DeleteDownloadUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.GetDownloadClientByIdUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ObserveDownloadClientsUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ObserveDownloadQueueUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ObserveSelectedDownloadClientsUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.PauseDownloadUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.RefreshDownloadQueueUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.ResumeDownloadUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.SetDownloadClientActiveUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.TestDownloadClientConnectionUseCase
+import com.dnfapps.arrmatey.downloadclient.usecase.UpdateDownloadClientUseCase
+import com.dnfapps.arrmatey.downloadclient.viewmodel.DownloadClientSettingsViewModel
+import com.dnfapps.arrmatey.downloadclient.viewmodel.DownloadClientsViewModel
+import com.dnfapps.arrmatey.downloadclient.viewmodel.DownloadQueueViewModel
 import com.dnfapps.arrmatey.instances.model.InstanceType
 import com.dnfapps.arrmatey.instances.usecase.GetProwlarrInstanceRepositoryUseCase
 import com.dnfapps.arrmatey.instances.usecase.GetSeerrInstanceRepositoryUseCase
@@ -86,6 +105,7 @@ import org.koin.dsl.module
 val databaseModule = module {
     single { getRoomDatabase(get()) }
     single { get<ArrMateyDatabase>().getInstanceDao() }
+    single { get<ArrMateyDatabase>().getDownloadClientDao() }
 }
 
 val networkModule = module {
@@ -114,13 +134,16 @@ val preferencesModule = module {
 val repositoryModule = module {
     single { InstanceRepository(get()) }
     single { InstancePreferenceStoreRepository(get()) }
-
     single { InstanceManager(get(), get()) }
+
+    single { DownloadClientRepository(get()) }
+    single { DownloadClientManager(get(), get()) }
 }
 
 val serviceModule = module {
     single { ActivityQueueService(get(), get()) }
     single { CalendarService(get()) }
+    single { DownloadQueueService(get()) }
 }
 
 val useCaseModule = module {
@@ -166,6 +189,19 @@ val useCaseModule = module {
     factory { GetSeerrInstanceRepositoryUseCase(get()) }
     factory { GetCurrentSeerrUserUseCase() }
     factory { GetRequestsUseCase() }
+    factory { ObserveDownloadClientsUseCase(get()) }
+    factory { ObserveDownloadQueueUseCase(get()) }
+    factory { PauseDownloadUseCase(get()) }
+    factory { ResumeDownloadUseCase(get()) }
+    factory { DeleteDownloadUseCase(get()) }
+    factory { TestDownloadClientConnectionUseCase(get()) }
+    factory { CreateDownloadClientUseCase(get()) }
+    factory { DeleteDownloadClientUseCase(get()) }
+    factory { UpdateDownloadClientUseCase(get()) }
+    factory { GetDownloadClientByIdUseCase(get()) }
+    factory { RefreshDownloadQueueUseCase(get()) }
+    factory { ObserveSelectedDownloadClientsUseCase(get()) }
+    factory { SetDownloadClientActiveUseCase(get()) }
     factory { GetProwlarrIndexersStatusUseCase(get()) }
     factory { GetProwlarrInstanceRepositoryUseCase(get()) }
 }
@@ -196,7 +232,7 @@ val viewModelModule = module {
     factory { (seriesId: Long, episode: Episode) ->
         EpisodeDetailsViewModel(seriesId, episode, get(), get(), get(), get(), get())
     }
-    factory { MoreScreenViewModel(get(), get(), get()) }
+    factory { MoreScreenViewModel(get(), get(), get(), get(), get()) }
     factory { AddInstanceViewModel(get(), get(), get(), get()) }
     factory { (instanceId: Long) ->
         EditInstanceViewModel(instanceId, get(), get(), get(), get())
@@ -208,6 +244,10 @@ val viewModelModule = module {
     factory { ProwlarrIndexersViewModel(get(), get(), get()) }
     factory { ProwlarrSearchViewModel(get(), get(), get()) }
     factory { RequestsViewModel(get(), get(), get()) }
+    factory { DownloadQueueViewModel(get(), get(), get(), get(), get()) }
+    factory { (clientId: Long?) ->
+        DownloadClientSettingsViewModel(clientId, get(), get(), get(), get(), get(), get()) }
+    factory { DownloadClientsViewModel(get(), get(), get(), get(), get()) }
 }
 
 val resourcesModule = module {
@@ -216,4 +256,13 @@ val resourcesModule = module {
 
 expect fun platformModules(): List<Module>
 
-fun appModules() = listOf(networkModule, databaseModule, preferencesModule, repositoryModule, serviceModule, useCaseModule, viewModelModule, resourcesModule) + platformModules()
+fun appModules() = listOf(
+    networkModule,
+    databaseModule,
+    preferencesModule,
+    repositoryModule,
+    serviceModule,
+    useCaseModule,
+    viewModelModule,
+    resourcesModule
+) + platformModules()

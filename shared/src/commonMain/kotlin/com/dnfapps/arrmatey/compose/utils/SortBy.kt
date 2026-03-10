@@ -25,6 +25,13 @@ enum class SortBy(
     // Lookup
     Relevance("star", MR.strings.relevance),
 
+    // Download Client
+    Size("opticaldiscdrive.fill", MR.strings.size),
+    Progress("progress.indicator", MR.strings.progress),
+    DownloadSpeed("arrow.down.to.line", MR.strings.download_speed),
+    UploadSpeed("arrow.up", MR.strings.upload_speed),
+    Eta("clock", MR.strings.eta),
+
     // Prowlarr
     Name("textformat", MR.strings.name),
     Priority("star", MR.strings.priority),
@@ -56,6 +63,8 @@ enum class SortBy(
             }
 
         fun lookupEntries() = listOf(Relevance, Year, Rating)
+
+        fun downloadClientEntries() = listOf(Title, Added, Size, Progress, DownloadSpeed, UploadSpeed, Eta)
     }
 }
 
