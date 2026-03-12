@@ -12,7 +12,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -83,8 +86,9 @@ class InstanceManager(
 
     fun getSelectedArrRepository(type: InstanceType): Flow<ArrInstanceRepository?> =
         instanceRepository.observeSelectedInstance(type)
-            .map { instance ->
-                instance?.let { getArrRepository(it.id) }
+            .flatMapLatest { instance ->
+                if (instance == null) flowOf(null)
+                else _instanceRepositories.map { repos -> repos[instance.id] as? ArrInstanceRepository }
             }
 
     fun getSelectedSeerrRepository(): Flow<SeerrInstanceRepository?> = flow { emit(null) }
@@ -95,8 +99,9 @@ class InstanceManager(
 
     fun getSelectedProwlarrRepository(): Flow<ProwlarrInstanceRepository?> =
         instanceRepository.observeSelectedInstance(InstanceType.Prowlarr)
-            .map { instance ->
-                instance?.let { getProwlarrRepository(it.id) }
+            .flatMapLatest { instance ->
+                if (instance == null) flowOf(null)
+                else _instanceRepositories.map { repos -> repos[instance.id] as? ProwlarrInstanceRepository }
             }
 
     fun getAllRepositories(): List<InstanceScopedRepository> {
@@ -113,9 +118,8 @@ class InstanceManager(
 
     fun repositoriesByType(type: InstanceType): Flow<List<InstanceScopedRepository>> =
         instanceRepository.observeInstancesByType(type)
-            .map { instances ->
-                val current = _instanceRepositories.value
-                instances.mapNotNull { current[it.id] }
+            .combine(_instanceRepositories) { instances, repos ->
+                instances.mapNotNull { repos[it.id] }
             }
 
     fun getRepositoriesByType(type: InstanceType): List<InstanceScopedRepository> {
