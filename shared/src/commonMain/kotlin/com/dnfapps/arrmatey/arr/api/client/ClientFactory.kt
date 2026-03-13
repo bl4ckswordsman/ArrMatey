@@ -3,8 +3,8 @@ package com.dnfapps.arrmatey.arr.api.client
 import com.dnfapps.arrmatey.datastore.PreferencesStore
 import com.dnfapps.arrmatey.downloadclient.model.DownloadClient
 import com.dnfapps.arrmatey.instances.model.Instance
-import dev.shivathapaa.logger.api.loggerI
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -46,6 +46,11 @@ fun createInstanceClient(
             }
         }
 
+        install(HttpRequestRetry) {
+            retryOnExceptionOrServerErrors(maxRetries = 3)
+            exponentialDelay()
+        }
+
         install(Logging) {
             logger = customLogger
             level = LogLevel.ALL
@@ -74,6 +79,11 @@ class HttpClientFactory(private val json: Json, private val logger: Logger) {
             install(HttpTimeout) {
                 requestTimeoutMillis = 30_000
                 socketTimeoutMillis = 30_000
+            }
+
+            install(HttpRequestRetry) {
+                retryOnExceptionOrServerErrors(maxRetries = 3)
+                exponentialDelay()
             }
 
             install(HttpCookies)
