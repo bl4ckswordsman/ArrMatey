@@ -33,6 +33,7 @@ windowSize = "1.4.0"
 aboutLibraries = "13.2.1"
 reorderable = "3.0.0"
 composeMarkdown = "0.5.8"
+kmp-logger = "1.2.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -83,6 +84,7 @@ aboutlibraries = { module = "com.mikepenz:aboutlibraries-core", version.ref = "a
 aboutlibraries-compose = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
+kmp-logger = { module = "io.github.shivathapaa:logger", version.ref = "kmp-logger" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -33,6 +33,8 @@ kotlin {
             implementation(libs.aboutlibraries.compose)
             implementation(libs.reorderable)
             implementation(libs.compose.markdown)
+            
+            implementation(libs.kmp.logger)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -57,6 +59,8 @@ kotlin {
             implementation(libs.moko.resources.compose)
 
             implementation(libs.aboutlibraries)
+            
+            implementation(libs.kmp.logger)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
